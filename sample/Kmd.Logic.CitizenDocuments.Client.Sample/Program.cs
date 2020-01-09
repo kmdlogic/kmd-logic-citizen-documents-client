@@ -64,9 +64,11 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                     ClientId = configuration.TokenProvider.ClientId, //"085d3847-1b71-4203-aa52-bbb98d5ce57c",
                     ClientSecret = configuration.TokenProvider.ClientSecret // "Ox30ERiezE+gbat7k9jtCmnfKGISFoA8AVjnJo8IgH8="
                 };
+                configuration.Citizen.SubscriptionId = configuration.SubscriptionId;
+                configuration.Citizen.Serviceuri = configuration.Serviceuri;
                 var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
                 var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
-                var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(new Guid(configuration.SubscriptionId), configuration.ConfiguartionId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
+                var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(configuration.ConfiguartionId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
 
                 if (uploadDocument == null)
                 {
@@ -75,7 +77,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 }
                 Log.Information($"Document uploaded successfully and details are :-  DocumentId : {uploadDocument.DocumentId} ; DocumentType : {uploadDocument.DocumentType} ; FileAccessPageUrl : {uploadDocument.FileAccessPageUrl} ");
 
-                var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new Guid(configuration.SubscriptionId), new SendCitizenDocumentRequest
+                var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest
                 {
                     ConfigurationId = new Guid(configuration.ConfiguartionId),
                     SendingSystem = configuration.SendingSystem,

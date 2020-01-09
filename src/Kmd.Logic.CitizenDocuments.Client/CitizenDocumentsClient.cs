@@ -50,12 +50,12 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <exception cref="SerializationException">Unable process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
         /// <exception cref="CitizenDocumentsException">Invalid Citizen documents configuration details.</exception>
-        public async Task<CitizenDocumentUploadResponse> UploadAttachmentWithHttpMessagesAsync(Guid subscriptionId, string configurationId, int retentionPeriodInDays, string cpr, string documentType, Stream document, String documentName)
+        public async Task<CitizenDocumentUploadResponse> UploadAttachmentWithHttpMessagesAsync(string configurationId, int retentionPeriodInDays, string cpr, string documentType, Stream document, String documentName)
         {
             var client = this.CreateClient();
 
             var response = await client.UploadAttachmentWithHttpMessagesAsync(
-                                subscriptionId: subscriptionId,
+                                subscriptionId: new Guid(options.SubscriptionId),
                                 configurationId: configurationId,
                                 retentionPeriodInDays: retentionPeriodInDays,
                                 cpr: cpr,
@@ -86,12 +86,12 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <exception cref="SerializationException">Unable process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
         /// <exception cref="CitizenDocumentsException">Invalid Citizen configuration details.</exception>
-        public async Task<SendCitizenDocumentResponse> SendDocumentWithHttpMessagesAsync(Guid subscriptionId, SendCitizenDocumentRequest sendCitizenDocumentRequest)
+        public async Task<SendCitizenDocumentResponse> SendDocumentWithHttpMessagesAsync(SendCitizenDocumentRequest sendCitizenDocumentRequest)
         {
             var client = this.CreateClient();
 
             var response = await client.SendDocumentWithHttpMessagesAsync(
-                                subscriptionId: subscriptionId,
+                                subscriptionId: new Guid(options.SubscriptionId),
                                 sendCitizenDocumentRequest: sendCitizenDocumentRequest).ConfigureAwait(false);
 
             switch (response.Response.StatusCode)
