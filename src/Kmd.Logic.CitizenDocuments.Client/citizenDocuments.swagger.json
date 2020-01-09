@@ -1,0 +1,663 @@
+﻿{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.1.1",
+    "title": "KMD Logic Citizen Documents Service API"
+  },
+  "paths": {
+    "/subscriptions/document-download/{documentId}": {
+      "get": {
+        "tags": [
+          "CitizenDocumentFileAccess"
+        ],
+        "summary": "Gets the citizen document by id.",
+        "operationId": "GetDocument",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The document is loaded successfully",
+            "schema": {
+              "$ref": "#/definitions/CitizenDocumentDownloadResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "410": {
+            "description": "Client Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/document-download/{documentId}/load-document-data": {
+      "get": {
+        "tags": [
+          "CitizenDocumentFileAccess"
+        ],
+        "summary": "Loads the data for Citizen Document File Access Page.",
+        "operationId": "GetFileAccessPageData",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data is loaded successfully",
+            "schema": {
+              "$ref": "#/definitions/CitizenDocumentFileAccessPageData"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Document is not found"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/{subscriptionId}/citizen-documents/upload-document": {
+      "post": {
+        "tags": [
+          "CitizenDocumentProcess"
+        ],
+        "summary": "Uploads the single citizen document",
+        "operationId": "UploadAttachment",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "configurationId",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "cpr",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "retentionPeriodInDays",
+            "in": "formData",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "documentType",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "citizenDocument",
+              "digitalPostCoverLetter",
+              "snailMailCoverLetter"
+            ]
+          },
+          {
+            "name": "document",
+            "in": "formData",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "documentName",
+            "in": "formData",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The document is uploaded successfully",
+            "schema": {
+              "$ref": "#/definitions/CitizenDocumentUploadResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "uniqueItems": false,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request is unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/{subscriptionId}/citizen-documents/save-config": {
+      "post": {
+        "tags": [
+          "CitizenDocumentProcess"
+        ],
+        "summary": "Create provider config to send citizen document",
+        "operationId": "SaveConfig",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CitizenDocumentProviderConfigRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The config is created successfully",
+            "schema": {
+              "$ref": "#/definitions/CitizenDocumentProviderConfigResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "uniqueItems": false,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request is unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "409": {
+            "description": "The config already exists",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/{subscriptionId}/citizen-documents/load-provider-config": {
+      "get": {
+        "tags": [
+          "CitizenDocumentProcess"
+        ],
+        "summary": "Loads the provider config.",
+        "operationId": "LoadProviderConfiguration",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The configuration is loaded successfully",
+            "schema": {
+              "$ref": "#/definitions/CitizenDocumentConfigResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "The request is not authorized"
+          },
+          "404": {
+            "description": "Configuration is not found"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/{subscriptionId}/citizen-documents/send-documents": {
+      "post": {
+        "tags": [
+          "CitizenDocumentProcess"
+        ],
+        "summary": "Sends the documents to citizens",
+        "operationId": "SendDocument",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "sendCitizenDocumentRequest",
+            "in": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SendCitizenDocumentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The document is sent successfully",
+            "schema": {
+              "$ref": "#/definitions/SendCitizenDocumentResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "The request is not authorized"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/{subscriptionId}/citizen-documents/{configurationId}/edit-config": {
+      "post": {
+        "tags": [
+          "CitizenDocumentProcess"
+        ],
+        "summary": "Edit citizen document configuration settings.",
+        "operationId": "EditConfig",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "configurationId",
+            "in": "path",
+            "description": "configuration Id",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CitizenDocumentProviderConfigRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The config is updated successfully",
+            "schema": {
+              "$ref": "#/definitions/CitizenDocumentProviderConfigResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "uniqueItems": false,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request is unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "404": {
+            "description": "The config does not exists",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "409": {
+            "description": "The config already exists",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "CitizenDocumentDownloadResponse": {
+      "type": "object",
+      "properties": {
+        "citizenDocumentFileId": {
+          "format": "uuid",
+          "description": "The unique identifier of the Citizen Document",
+          "type": "string"
+        },
+        "citizenDocumentFileUri": {
+          "description": "The location of the Citizen Document",
+          "type": "string"
+        }
+      }
+    },
+    "CitizenDocumentFileAccessPageData": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string"
+        },
+        "retentionPeriodInDays": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "systemName": {
+          "type": "string"
+        },
+        "documentUploadedTime": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "appTitle": {
+          "type": "string"
+        },
+        "pageHeader": {
+          "type": "string"
+        },
+        "footer": {
+          "type": "string"
+        }
+      }
+    },
+    "CitizenDocumentType": {
+      "enum": [
+        "citizenDocument",
+        "digitalPostCoverLetter",
+        "snailMailCoverLetter"
+      ],
+      "type": "string"
+    },
+    "CitizenDocumentUploadResponse": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "documentType": {
+          "$ref": "#/definitions/CitizenDocumentType"
+        },
+        "fileAccessPageUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "CitizenDocumentProviderConfigRequest": {
+      "type": "object",
+      "properties": {
+        "configName": {
+          "type": "string"
+        },
+        "digitalPostConfigurationId": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "systemName": {
+          "type": "string"
+        },
+        "appTitle": {
+          "type": "string"
+        },
+        "pageHeader": {
+          "type": "string"
+        },
+        "footer": {
+          "type": "string"
+        }
+      }
+    },
+    "CitizenDocumentProviderConfigResponse": {
+      "type": "object",
+      "properties": {
+        "configurationId": {
+          "format": "uuid",
+          "type": "string"
+        }
+      }
+    },
+    "CitizenDocumentConfigResponse": {
+      "type": "object",
+      "properties": {
+        "digitalPostConfigurationId": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "configId": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "configName": {
+          "type": "string"
+        },
+        "systemName": {
+          "type": "string"
+        },
+        "appTitle": {
+          "type": "string"
+        },
+        "pageHeader": {
+          "type": "string"
+        },
+        "footer": {
+          "type": "string"
+        }
+      }
+    },
+    "SendCitizenDocumentRequest": {
+      "type": "object",
+      "properties": {
+        "configurationId": {
+          "format": "uuid",
+          "description": "Citizen document config id",
+          "type": "string"
+        },
+        "sendingSystem": {
+          "description": "Name of the sending system",
+          "type": "string"
+        },
+        "cpr": {
+          "description": "Citizen CPR value",
+          "type": "string"
+        },
+        "documentType": {
+          "description": "Name of the predefined document type to be used for subsequent delivery",
+          "type": "string"
+        },
+        "citizenDocumentId": {
+          "format": "uuid",
+          "description": "Id of the original document to share with the citizen",
+          "type": "string"
+        },
+        "title": {
+          "description": "Title of the message",
+          "type": "string"
+        },
+        "digitalPostCoverLetterId": {
+          "format": "uuid",
+          "description": "Id of the digital post cover letter to share with the citizen",
+          "type": "string"
+        },
+        "snailMailCoverLetterId": {
+          "format": "uuid",
+          "description": "Id of the snail mail cover letter to share with the citizen",
+          "type": "string"
+        }
+      }
+    },
+    "SendCitizenDocumentResponse": {
+      "type": "object",
+      "properties": {
+        "messageId": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "name": "Authorization",
+      "in": "header",
+      "type": "apiKey",
+      "description": "Standard Authorization header using the Bearer scheme. <b>Example: \"bearer {token}\".</b> You can obtain that value from your browser Developer tools"
+    }
+  },
+  "tags": []
+}
