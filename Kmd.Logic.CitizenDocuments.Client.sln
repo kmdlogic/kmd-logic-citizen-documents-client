@@ -1,18 +1,18 @@
-﻿			
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{EA52747E-19EC-48F9-B51F-D569DC3F116F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kmd.Logic.CitizenDocuments.Client.Sample", "sample\Kmd.Logic.CitizenDocuments.Client.Sample/Kmd.Logic.CitizenDocuments.Client.Sample.csproj", "{62A43B34-9F1D-42A2-B703-8127B6A503C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kmd.Logic.CitizenDocuments.Client.Sample", "sample\Kmd.Logic.CitizenDocuments.Client.Sample\Kmd.Logic.CitizenDocuments.Client.Sample.csproj", "{62A43B34-9F1D-42A2-B703-8127B6A503C7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{59B0FA9B-A297-459C-881B-EA1441FE8827}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
-		build.ps1 = build.ps1	
+		build.ps1 = build.ps1
 		build.sh = build.sh
-		global.json = global.json			
+		global.json = global.json
 		setup.ps1 = setup.ps1
 		setup.sh = setup.sh
 	EndProjectSection
