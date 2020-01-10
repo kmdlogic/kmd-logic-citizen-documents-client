@@ -3,8 +3,8 @@
     Push-Location $PSScriptRoot
 
     if(Test-Path .\artifacts) {
-	    Write-Host "build: Cleaning .\artifacts"
-	    Remove-Item .\artifacts -Force -Recurse
+        Write-Host "build: Cleaning .\artifacts"
+        Remove-Item .\artifacts -Force -Recurse
     }
 
     # Get the branch from Appveyor or Travis or git
