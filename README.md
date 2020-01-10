@@ -8,7 +8,7 @@ In projects or components where you need to upload or send documents, add a NuGe
 
 The simplest example to get a citizens details is:
 
-```csharp
+```csharp 
 using (var httpClient = new HttpClient())
 {
      var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
