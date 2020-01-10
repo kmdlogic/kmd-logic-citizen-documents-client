@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Kmd.Logic.CitizenDocuments.Client.Models;
-using Kmd.Logic.CitizenDocuments.Client.sample;
+using Kmd.Logic.CitizenDocuments.Client.Sample;
 using Kmd.Logic.Identity.Authorization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace Kmd.Logic.CitizenDocuments.Client.Sample
 {
+    [SuppressMessage("Design", "CA2000:Types that own disposable fields should be disposable", Justification = "HttpClient is not owned by this class.")]
     public static class Program
     {
         public static async Task Main(string[] args)
@@ -25,14 +27,35 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                     .Build()
                     .Get<AppConfiguration>();
 
-                await Run(config).ConfigureAwait(false);
+                switch (config.Action)
+                {
+                    case CommandLineAction.None:
+
+                        Log.Information("You must provide arguments");
+                        Log.Verbose("You must get a bearer token from the https://console.kmdlogic.io/ or using Client Credentials for your subscription.");
+                        Log.Verbose("Examples:");
+                        Log.Verbose("--Action=UploadDocument --SubscriptionId={SubscriptionId} ... --BearerToken={BearerToken}", "INSERT", "INSERT", "INSERT");
+                        Log.Verbose("--Action=SendDocument --SubscriptionId={SubscriptionId} ... --BearerToken={BearerToken}", "INSERT", "INSERT", "INSERT");
+                        break;
+
+                    case CommandLineAction.UploadDocument:
+                        await UploadAttachmentAsync(config).ConfigureAwait(false);
+                        break;
+
+                    case CommandLineAction.SendDocument:
+                        await SendDocumentAsync(config).ConfigureAwait(false);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException($"Unknown action {config.Action}");
+                }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 Log.Fatal(ex, "Caught a fatal unhandled exception");
             }
-#pragma warning restore CA1031 // Do not catch general exception types
             finally
             {
                 Log.CloseAndFlush();
@@ -47,56 +70,68 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 .CreateLogger();
         }
 
-        private static async Task Run(AppConfiguration configuration)
+        private static CitizenDocumentsClient GetClient(AppConfiguration configuration)
         {
             var validator = new ConfigurationValidator(configuration);
             if (!validator.Validate())
             {
+                return null;
+            }
+
+            var httpClient = new HttpClient();
+            LogicTokenProviderOptions tokenProviderOptions = new LogicTokenProviderOptions()
+            {
+                AuthorizationScope = configuration.TokenProvider.AuthorizationScope,
+                AuthorizationTokenIssuer = new Uri(configuration.TokenProvider.AuthorizationTokenIssuer.ToString()),
+                ClientId = configuration.TokenProvider.ClientId,
+                ClientSecret = configuration.TokenProvider.ClientSecret,
+            };
+            configuration.Citizen.SubscriptionId = configuration.SubscriptionId;
+            configuration.Citizen.Serviceuri = configuration.Serviceuri;
+            var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
+            var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
+
+            return citizenDocumentClient;
+        }
+
+        private static async Task<Guid> UploadAttachmentAsync(AppConfiguration config)
+        {
+            var citizenDocumentClient = GetClient(config);
+            var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(config.ConfiguartionId, config.RetentionPeriodInDays, config.Cpr, config.DocumentType, config.Document, config.DocumentName).ConfigureAwait(false);
+
+            if (uploadDocument == null)
+            {
+                Log.Error("There is error occured in upload");
+                return Guid.Empty;
+            }
+
+            Log.Information($"Document uploaded successfully and details are :-  DocumentId : {uploadDocument.DocumentId} ; DocumentType : {uploadDocument.DocumentType} ; FileAccessPageUrl : {uploadDocument.FileAccessPageUrl} ");
+            return uploadDocument.DocumentId.Value;
+        }
+
+        private static async Task SendDocumentAsync(AppConfiguration config)
+        {
+            var documentId = await UploadAttachmentAsync(config).ConfigureAwait(false);
+            var citizenDocumentClient = GetClient(config);
+            var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest()
+            {
+                ConfigurationId = new Guid(config.ConfiguartionId),
+                SendingSystem = config.SendingSystem,
+                Cpr = config.Cpr,
+                DocumentType = config.SendDocumentType,
+                CitizenDocumentId = documentId,
+                Title = config.Title,
+                DigitalPostCoverLetterId = documentId,
+                SnailMailCoverLetterId = documentId,
+            }).ConfigureAwait(false);
+
+            if (sendDocument == null)
+            {
+                Log.Error("There is error occured in send document");
                 return;
             }
 
-            using (var httpClient = new HttpClient())
-            {
-                LogicTokenProviderOptions tokenProviderOptions = new LogicTokenProviderOptions()
-                {
-                    AuthorizationScope = configuration.TokenProvider.AuthorizationScope, // "https://logicidentityprod.onmicrosoft.com/ac1d197a-0e7c-4add-83c5-e1b30a08efd6/.default",
-                    AuthorizationTokenIssuer = new Uri(configuration.TokenProvider.AuthorizationTokenIssuer.ToString()), //new Uri("https://login.microsoftonline.com/logicidentityprod.onmicrosoft.com/oauth2/v2.0/token"),
-                    ClientId = configuration.TokenProvider.ClientId, //"085d3847-1b71-4203-aa52-bbb98d5ce57c",
-                    ClientSecret = configuration.TokenProvider.ClientSecret // "Ox30ERiezE+gbat7k9jtCmnfKGISFoA8AVjnJo8IgH8="
-                };
-                configuration.Citizen.SubscriptionId = configuration.SubscriptionId;
-                configuration.Citizen.Serviceuri = configuration.Serviceuri;
-                var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
-                var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
-                var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(configuration.ConfiguartionId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
-
-                if (uploadDocument == null)
-                {
-                    Log.Error("There is error occured in upload");
-                    return;
-                }
-                Log.Information($"Document uploaded successfully and details are :-  DocumentId : {uploadDocument.DocumentId} ; DocumentType : {uploadDocument.DocumentType} ; FileAccessPageUrl : {uploadDocument.FileAccessPageUrl} ");
-
-                var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest
-                {
-                    ConfigurationId = new Guid(configuration.ConfiguartionId),
-                    SendingSystem = configuration.SendingSystem,
-                    Cpr = configuration.Cpr,
-                    DocumentType = configuration.SendDocumentType,
-                    CitizenDocumentId = uploadDocument.DocumentId,
-                    Title = configuration.title,
-                    DigitalPostCoverLetterId = uploadDocument.DocumentId,
-                    SnailMailCoverLetterId = uploadDocument.DocumentId
-                });
-                if (sendDocument == null)
-                {
-                    Log.Error("There is error occured in send document");
-                    return;
-                }
-                Log.Information("Document was sent and got doc2mail messageId {MessageId}", sendDocument.MessageId);
-            }
-
+            Log.Information("Document was sent and got doc2mail messageId {MessageId}", sendDocument.MessageId);
         }
-
     }
 }

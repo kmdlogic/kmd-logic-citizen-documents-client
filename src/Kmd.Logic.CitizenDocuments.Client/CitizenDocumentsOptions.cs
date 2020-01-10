@@ -17,8 +17,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// </remarks>
         public Uri Serviceuri { get; set; } = new Uri("https://gateway.kmdlogic.io/cpr/v1");
 
-        public string SubscriptionId { get; set; } = "";
-
-
+        public string SubscriptionId { get; set; } = string.Empty;
     }
 }
