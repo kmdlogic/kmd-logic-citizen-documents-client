@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Kmd.Logic.CitizenDocuments.Client
 {
-
     /// <summary>
     /// upload and send documents.
     /// </summary>
@@ -30,7 +29,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         private InternalClient internalClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CitizenDocumentClient"/> class.
+        /// Initializes a new instance of the <see cref="CitizenDocumentsClient"/> class.
         /// </summary>
         /// <param name="httpClient">The HTTP client to use. The caller is expected to manage this resource and it will not be disposed.</param>
         /// <param name="tokenProviderFactory">The Logic access token provider factory.</param>
