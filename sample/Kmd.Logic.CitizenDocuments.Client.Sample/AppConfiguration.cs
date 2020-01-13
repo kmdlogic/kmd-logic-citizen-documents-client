@@ -14,13 +14,13 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
         public CitizenDocumentsOptions Citizen { get; set; } = new CitizenDocumentsOptions();
 
-        public string SubscriptionId { get; set; }
+        public string SubscriptionId { get; set; } = string.Empty;
 
-        public string ConfiguartionId { get; set; }
+        public string ConfigurationId { get; set; } = string.Empty;
 
-        public Uri Serviceuri { get; set; } = new Uri("https://gateway.kmdlogic.io/cpr/v1");
+        public Uri Serviceuri { get; set; } = new Uri("https://google.com");
 
-        public string Cpr { get; set; }
+        public string Cpr { get; set; } = string.Empty;
 
         public int RetentionPeriodInDays { get; set; } = 3;
 

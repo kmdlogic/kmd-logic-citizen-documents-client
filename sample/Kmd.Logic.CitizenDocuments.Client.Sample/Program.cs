@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Kmd.Logic.CitizenDocuments.Client.Models;
-using Kmd.Logic.CitizenDocuments.Client.Sample;
 using Kmd.Logic.Identity.Authorization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -34,8 +33,8 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                         Log.Information("You must provide arguments");
                         Log.Verbose("You must get a bearer token from the https://console.kmdlogic.io/ or using Client Credentials for your subscription.");
                         Log.Verbose("Examples:");
-                        Log.Verbose("--Action=UploadDocument --SubscriptionId={SubscriptionId} ... --BearerToken={BearerToken}", "INSERT", "INSERT", "INSERT");
-                        Log.Verbose("--Action=SendDocument --SubscriptionId={SubscriptionId} ... --BearerToken={BearerToken}", "INSERT", "INSERT", "INSERT");
+                        Log.Verbose("--Action=UploadDocument --SubscriptionId={SubscriptionId} --ConfigurationId={ConfigurationId} ... --BearerToken={BearerToken}", "INSERT", "INSERT", "INSERT");
+                        Log.Verbose("--Action=SendDocument --SubscriptionId={SubscriptionId} --ConfigurationId={ConfigurationId} ... --BearerToken={BearerToken}", "INSERT", "INSERT", "INSERT");
                         break;
 
                     case CommandLineAction.UploadDocument:
@@ -58,6 +57,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
             }
             finally
             {
+                Log.Information("Shutting down");
                 Log.CloseAndFlush();
             }
         }
@@ -97,7 +97,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
         private static async Task<Guid> UploadAttachmentAsync(AppConfiguration config)
         {
             var citizenDocumentClient = GetClient(config);
-            var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(config.ConfiguartionId, config.RetentionPeriodInDays, config.Cpr, config.DocumentType, config.Document, config.DocumentName).ConfigureAwait(false);
+            var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(config.ConfigurationId, config.RetentionPeriodInDays, config.Cpr, config.DocumentType, config.Document, config.DocumentName).ConfigureAwait(false);
 
             if (uploadDocument == null)
             {
@@ -115,7 +115,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
             var citizenDocumentClient = GetClient(config);
             var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest()
             {
-                ConfigurationId = new Guid(config.ConfiguartionId),
+                ConfigurationId = new Guid(config.ConfigurationId),
                 SendingSystem = config.SendingSystem,
                 Cpr = config.Cpr,
                 DocumentType = config.SendDocumentType,
@@ -127,7 +127,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
             if (sendDocument == null)
             {
-                Log.Error("There is error occured in send document");
+                Log.Error("An error occurred while send document operation");
                 return;
             }
 
