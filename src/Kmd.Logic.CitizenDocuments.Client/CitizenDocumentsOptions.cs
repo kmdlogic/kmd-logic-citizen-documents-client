@@ -15,7 +15,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <remarks>
         /// This option should not be overridden except for testing purposes.
         /// </remarks>
-        public Uri Serviceuri { get; set; } = new Uri("https://gateway.kmdlogic.io/cpr/v1");
+        public Uri Serviceuri { get; set; } = new Uri(string.Empty);
 
         public string SubscriptionId { get; set; } = string.Empty;
     }

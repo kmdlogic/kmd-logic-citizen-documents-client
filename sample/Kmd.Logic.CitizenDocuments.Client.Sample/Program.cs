@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Kmd.Logic.CitizenDocuments.Client.Models;
-using Kmd.Logic.CitizenDocuments.Client.Sample;
 using Kmd.Logic.Identity.Authorization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -88,7 +87,8 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                     Title = configuration.Title,
                     DigitalPostCoverLetterId = uploadDocument.DocumentId,
                     SnailMailCoverLetterId = uploadDocument.DocumentId,
-                });
+                }).ConfigureAwait(false);
+
                 if (sendDocument == null)
                 {
                     Log.Error("There is error occured in send document");
