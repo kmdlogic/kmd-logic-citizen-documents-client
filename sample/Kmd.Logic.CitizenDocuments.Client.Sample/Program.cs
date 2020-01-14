@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Kmd.Logic.CitizenDocuments.Client.Models;
-using Kmd.Logic.CitizenDocuments.Client.sample;
+using Kmd.Logic.CitizenDocuments.Client.Sample;
 using Kmd.Logic.Identity.Authorization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -59,10 +59,10 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
             {
                 LogicTokenProviderOptions tokenProviderOptions = new LogicTokenProviderOptions()
                 {
-                    AuthorizationScope = configuration.TokenProvider.AuthorizationScope, // "https://logicidentityprod.onmicrosoft.com/ac1d197a-0e7c-4add-83c5-e1b30a08efd6/.default",
-                    AuthorizationTokenIssuer = new Uri(configuration.TokenProvider.AuthorizationTokenIssuer.ToString()), //new Uri("https://login.microsoftonline.com/logicidentityprod.onmicrosoft.com/oauth2/v2.0/token"),
-                    ClientId = configuration.TokenProvider.ClientId, //"085d3847-1b71-4203-aa52-bbb98d5ce57c",
-                    ClientSecret = configuration.TokenProvider.ClientSecret // "Ox30ERiezE+gbat7k9jtCmnfKGISFoA8AVjnJo8IgH8="
+                    AuthorizationScope = configuration.TokenProvider.AuthorizationScope,
+                    AuthorizationTokenIssuer = new Uri(configuration.TokenProvider.AuthorizationTokenIssuer.ToString()),
+                    ClientId = configuration.TokenProvider.ClientId,
+                    ClientSecret = configuration.TokenProvider.ClientSecret,
                 };
                 configuration.Citizen.SubscriptionId = configuration.SubscriptionId;
                 configuration.Citizen.Serviceuri = configuration.Serviceuri;
@@ -75,6 +75,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                     Log.Error("There is error occured in upload");
                     return;
                 }
+
                 Log.Information($"Document uploaded successfully and details are :-  DocumentId : {uploadDocument.DocumentId} ; DocumentType : {uploadDocument.DocumentType} ; FileAccessPageUrl : {uploadDocument.FileAccessPageUrl} ");
 
                 var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest
@@ -84,19 +85,18 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                     Cpr = configuration.Cpr,
                     DocumentType = configuration.SendDocumentType,
                     CitizenDocumentId = uploadDocument.DocumentId,
-                    Title = configuration.title,
+                    Title = configuration.Title,
                     DigitalPostCoverLetterId = uploadDocument.DocumentId,
-                    SnailMailCoverLetterId = uploadDocument.DocumentId
+                    SnailMailCoverLetterId = uploadDocument.DocumentId,
                 });
                 if (sendDocument == null)
                 {
                     Log.Error("There is error occured in send document");
                     return;
                 }
+
                 Log.Information("Document was sent and got doc2mail messageId {MessageId}", sendDocument.MessageId);
             }
-
         }
-
     }
 }

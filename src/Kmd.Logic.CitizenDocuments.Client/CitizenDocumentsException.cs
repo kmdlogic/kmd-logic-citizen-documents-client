@@ -11,6 +11,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         public CitizenDocumentsException()
         {
         }
+
         public CitizenDocumentsException(string message, Microsoft.Rest.HttpOperationResponse<object> response)
             : base(message)
         {
@@ -33,5 +34,3 @@ namespace Kmd.Logic.CitizenDocuments.Client
         }
     }
 }
-
-
