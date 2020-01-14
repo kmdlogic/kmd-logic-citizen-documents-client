@@ -32,5 +32,10 @@ namespace Kmd.Logic.CitizenDocuments.Client
             : base(info, context)
         {
         }
+
+        public CitizenDocumentsException(string message)
+            : base(message)
+        {
+        }
     }
 }
