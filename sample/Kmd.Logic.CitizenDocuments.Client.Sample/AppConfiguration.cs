@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Kmd.Logic.Identity.Authorization;
 
 namespace Kmd.Logic.CitizenDocuments.Client.Sample

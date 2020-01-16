@@ -71,11 +71,11 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
                 if (uploadDocument == null)
                 {
-                    Log.Error("There is error occured in upload");
+                    Log.Error("An error occurred while document upload operation");
                     return;
                 }
 
-                Log.Information($"Document uploaded successfully and details are :-  DocumentId : {uploadDocument.DocumentId} ; DocumentType : {uploadDocument.DocumentType} ; FileAccessPageUrl : {uploadDocument.FileAccessPageUrl} ");
+                Log.Information("Document uploaded successfully and details are :-  DocumentId : {DocumentId} ; DocumentType : {DocumentType} ; FileAccessPageUrl : {FileAccessPageUrl}", uploadDocument.DocumentId, uploadDocument.DocumentType, uploadDocument.FileAccessPageUrl);
 
                 var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest
                 {
@@ -91,7 +91,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
                 if (sendDocument == null)
                 {
-                    Log.Error("There is error occured in send document");
+                    Log.Error("An error occurred while send document operation");
                     return;
                 }
 
