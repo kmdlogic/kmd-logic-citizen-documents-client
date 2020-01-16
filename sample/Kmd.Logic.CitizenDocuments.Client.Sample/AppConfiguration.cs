@@ -12,7 +12,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
         public string SubscriptionId { get; set; } = string.Empty;
 
-        public string ConfiguartionId { get; set; } = string.Empty;
+        public string ConfigurationId { get; set; } = string.Empty;
 
         public Uri Serviceuri { get; set; } = new Uri("http://google.com");
 

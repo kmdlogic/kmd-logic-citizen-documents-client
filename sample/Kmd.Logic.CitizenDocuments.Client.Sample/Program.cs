@@ -67,7 +67,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 configuration.Citizen.Serviceuri = configuration.Serviceuri;
                 var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
                 var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
-                var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(configuration.ConfiguartionId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
+                var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(configuration.ConfigurationId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
 
                 if (uploadDocument == null)
                 {
@@ -79,7 +79,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
                 var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest
                 {
-                    ConfigurationId = new Guid(configuration.ConfiguartionId),
+                    ConfigurationId = new Guid(configuration.ConfigurationId),
                     SendingSystem = configuration.SendingSystem,
                     Cpr = configuration.Cpr,
                     DocumentType = configuration.SendDocumentType,
