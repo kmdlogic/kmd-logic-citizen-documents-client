@@ -13,6 +13,7 @@
     <Authors>KMD</Authors>
     <PackageTags>kmd;logic;citizen;documents</PackageTags>
     <PackageIconUrl>https://console.kmdlogic.io/favicon-32x32.png</PackageIconUrl>
+    <PackageIcon>https://console.kmdlogic.io/favicon-32x32.png</PackageIcon>
     <PackageProjectUrl>https://github.com/kmdlogic/kmd-logic-citizen-documents-client</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/kmdlogic/kmd-logic-citizen-documents-client</RepositoryUrl>
