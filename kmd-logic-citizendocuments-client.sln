@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{59
 		build.ps1 = build.ps1
 		build.sh = build.sh
 		global.json = global.json
+		C:\Users\AA00595162\Source\Repos\KMDLoGIC\src\portal\Kmd.Logic.Portal\public\kmd-logic-icon.png = C:\Users\AA00595162\Source\Repos\KMDLoGIC\src\portal\Kmd.Logic.Portal\public\kmd-logic-icon.png
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 		setup.ps1 = setup.ps1
