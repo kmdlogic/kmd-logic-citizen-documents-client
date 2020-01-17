@@ -46,12 +46,12 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 .CreateLogger();
         }
 
-        private static async Task Run(AppConfiguration configuration)
+        private static async Task<string> Run(AppConfiguration configuration)
         {
             var validator = new ConfigurationValidator(configuration);
             if (!validator.Validate())
             {
-                return;
+                return "The validation of provider configuration details failed";
             }
 
             using (var httpClient = new HttpClient())
@@ -71,11 +71,11 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
                 if (uploadDocument == null)
                 {
-                    Log.Error("An error occurred while document upload operation");
-                    return;
+                    Log.Error("An unknown error occurred while uploading the document");
+                    return "An error occurred while uploading the citizen document";
                 }
 
-                Log.Information("Document uploaded successfully and details are :-  DocumentId : {DocumentId} ; DocumentType : {DocumentType} ; FileAccessPageUrl : {FileAccessPageUrl}", uploadDocument.DocumentId, uploadDocument.DocumentType, uploadDocument.FileAccessPageUrl);
+                Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadDocument.DocumentType, uploadDocument.DocumentId, uploadDocument.FileAccessPageUrl);
 
                 var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest
                 {
@@ -91,11 +91,13 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
                 if (sendDocument == null)
                 {
-                    Log.Error("An error occurred while send document operation");
-                    return;
+                    Log.Error("An unknown error occurred while sending the document");
+                    return "An error occurred while sending the citizen document";
                 }
 
-                Log.Information("Document was sent and got doc2mail messageId {MessageId}", sendDocument.MessageId);
+                Log.Information("The document is sent successfully and doc2mail provider response message id is {MessageId}", sendDocument.MessageId);
+
+                return "The citizen document was uploaded and sent successfully";
             }
         }
     }
