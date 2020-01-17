@@ -9,11 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kmd.Logic.CitizenDocuments.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{59B0FA9B-A297-459C-881B-EA1441FE8827}"
 	ProjectSection(SolutionItems) = preProject
-		kmd-logic-icon.png = kmd-logic-icon.png
 		appveyor.yml = appveyor.yml
 		build.ps1 = build.ps1
 		build.sh = build.sh
-		global.json = global.json		
+		Directory.Build.props = Directory.Build.props
+		global.json = global.json
+		kmd-logic-icon.png = kmd-logic-icon.png
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 		setup.ps1 = setup.ps1

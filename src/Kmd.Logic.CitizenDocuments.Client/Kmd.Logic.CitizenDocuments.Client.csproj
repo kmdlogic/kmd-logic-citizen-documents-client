@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Kmd.Logic.Identity.Authorization" Version="1.0.0" />
+    <None Include="..\..\kmd-logic-icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
