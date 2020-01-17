@@ -4,12 +4,11 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Kmd.Logic.CitizenDocuments.Client</RootNamespace>
-    <PackageIcon>kmd-logic-icon.png</PackageIcon>
+    <PackageIcon>https://console.kmdlogic.io/favicon-32x32.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kmd.Logic.Identity.Authorization" Version="1.0.0" />
-    <None Include="images\kmd-logic-icon.png" Pack="true" PackagePath=""/>
+    <PackageReference Include="Kmd.Logic.Identity.Authorization" Version="1.0.0" />    
   </ItemGroup>
 
 </Project>
