@@ -74,9 +74,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 case System.Net.HttpStatusCode.OK:
                     return (CitizenDocumentUploadResponse)response.Body;
 
-                case System.Net.HttpStatusCode.NotFound:
-                    return null;
-
                 case System.Net.HttpStatusCode.Unauthorized:
                     throw new CitizenDocumentsException("Unauthorized", response.Body as string);
 
@@ -107,7 +104,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     return (SendCitizenDocumentResponse)response.Body;
 
                 case System.Net.HttpStatusCode.NotFound:
-                    return null;
+                    throw new CitizenDocumentsException("Provided citizen document id is invalid", response.Response.Content.ReadAsStringAsync().Result as string);
 
                 case System.Net.HttpStatusCode.Unauthorized:
                     throw new CitizenDocumentsException("Unauthorized", response.Response.Content.ReadAsStringAsync().Result as string);
