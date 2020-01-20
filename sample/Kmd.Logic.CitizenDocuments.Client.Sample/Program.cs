@@ -69,12 +69,6 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
                 var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(configuration.ConfigurationId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
 
-                if (uploadDocument == null)
-                {
-                    Log.Error("An unknown error occurred while uploading the document");
-                    return "An error occurred while uploading the citizen document";
-                }
-
                 Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadDocument.DocumentType, uploadDocument.DocumentId, uploadDocument.FileAccessPageUrl);
 
                 var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest
@@ -88,12 +82,6 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                     DigitalPostCoverLetterId = uploadDocument.DocumentId,
                     SnailMailCoverLetterId = uploadDocument.DocumentId,
                 }).ConfigureAwait(false);
-
-                if (sendDocument == null)
-                {
-                    Log.Error("An unknown error occurred while sending the document");
-                    return "An error occurred while sending the citizen document";
-                }
 
                 Log.Information("The document is sent successfully and doc2mail provider response message id is {MessageId}", sendDocument.MessageId);
 
