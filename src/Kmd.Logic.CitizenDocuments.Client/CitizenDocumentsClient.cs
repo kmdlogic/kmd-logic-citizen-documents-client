@@ -1,12 +1,11 @@
-﻿using Kmd.Logic.CitizenDocuments.Client.Models;
-using Kmd.Logic.Identity.Authorization;
-using Microsoft.Rest;
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Kmd.Logic.CitizenDocuments.Client.Models;
+using Kmd.Logic.Identity.Authorization;
+using Microsoft.Rest;
 
 namespace Kmd.Logic.CitizenDocuments.Client
 {
@@ -19,8 +18,10 @@ namespace Kmd.Logic.CitizenDocuments.Client
     /// - Have a client credential issued for the Logic platform
     /// - Create a Citizen document configuration for the distribution service being used.
     /// </remarks>
-    [SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "HttpClient is not owned by this class.")]
+    [SuppressMessage("Design", "CA2000:Types that own disposable fields should be disposable", Justification = "HttpClient is not owned by this class.")]
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
     public sealed class CitizenDocumentsClient
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
     {
         private readonly HttpClient httpClient;
         private readonly CitizenDocumentsOptions options;
@@ -44,33 +45,37 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <summary>
         /// Uploads the single citizen document.
         /// </summary>
+        /// <param name="configurationId">Citizen document provider config id.</param>
+        /// <param name="retentionPeriodInDays">Retention period of the uploaded document.</param>
+        /// <param name="cpr">Citizen CPR no.</param>
+        /// <param name="documentType">Type of the citizen document.</param>
+        /// <param name="document">Original citizen document.</param>
+        /// <param name="documentName">Preferred name of citizen document.</param>
         /// <returns>The fileaccess page details or error if isn't valid.</returns>
         /// <exception cref="ValidationException">Missing cpr number.</exception>
-        /// <exception cref="SerializationException">Unable process the service response.</exception>
+        /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
-        /// <exception cref="CitizenDocumentsException">Invalid Citizen documents configuration details.</exception>
-        public async Task<CitizenDocumentUploadResponse> UploadAttachmentWithHttpMessagesAsync(string configurationId, int retentionPeriodInDays, string cpr, string documentType, Stream document, String documentName)
+        /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
+        public async Task<CitizenDocumentUploadResponse> UploadAttachmentWithHttpMessagesAsync(string configurationId, int retentionPeriodInDays, string cpr, string documentType, Stream document, string documentName)
         {
             var client = this.CreateClient();
 
             var response = await client.UploadAttachmentWithHttpMessagesAsync(
-                                subscriptionId: new Guid(options.SubscriptionId),
+                                subscriptionId: new Guid(this.options.SubscriptionId),
                                 configurationId: configurationId,
                                 retentionPeriodInDays: retentionPeriodInDays,
                                 cpr: cpr,
                                 documentType: documentType,
-                                document: document, documentName: documentName).ConfigureAwait(false);
+                                document: document,
+                                documentName: documentName).ConfigureAwait(false);
 
             switch (response.Response.StatusCode)
             {
                 case System.Net.HttpStatusCode.OK:
                     return (CitizenDocumentUploadResponse)response.Body;
 
-                case System.Net.HttpStatusCode.NotFound:
-                    return null;
-
                 case System.Net.HttpStatusCode.Unauthorized:
-                    throw new CitizenDocumentsException("Unauthorized ", response.Body as string);
+                    throw new CitizenDocumentsException("Unauthorized", response.Body as string);
 
                 default:
                     throw new CitizenDocumentsException("Invalid configuration provided to access Citizen Document service", response.Body as string);
@@ -82,7 +87,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// </summary>
         /// <param name="sendCitizenDocumentRequest">The send request class.</param>
         /// <returns>The messageId or error if the identifier isn't valid.</returns>
-        /// <exception cref="SerializationException">Unable process the service response.</exception>
+        /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
         /// <exception cref="CitizenDocumentsException">Invalid Citizen configuration details.</exception>
         public async Task<SendCitizenDocumentResponse> SendDocumentWithHttpMessagesAsync(SendCitizenDocumentRequest sendCitizenDocumentRequest)
@@ -90,7 +95,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             var client = this.CreateClient();
 
             var response = await client.SendDocumentWithHttpMessagesAsync(
-                                subscriptionId: new Guid(options.SubscriptionId),
+                                subscriptionId: new Guid(this.options.SubscriptionId),
                                 sendCitizenDocumentRequest: sendCitizenDocumentRequest).ConfigureAwait(false);
 
             switch (response.Response.StatusCode)
@@ -99,13 +104,13 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     return (SendCitizenDocumentResponse)response.Body;
 
                 case System.Net.HttpStatusCode.NotFound:
-                    return null;
+                    throw new CitizenDocumentsException("Provided citizen document id is invalid", response.Response.Content.ReadAsStringAsync().Result as string);
 
                 case System.Net.HttpStatusCode.Unauthorized:
-                    throw new CitizenDocumentsException("Unauthorized ", (response.Response.Content.ReadAsStringAsync()).Result as string);
+                    throw new CitizenDocumentsException("Unauthorized", response.Response.Content.ReadAsStringAsync().Result as string);
 
                 default:
-                    throw new CitizenDocumentsException("Invalid configuration provided to access CPR service", (response.Response.Content.ReadAsStringAsync()).Result as string);
+                    throw new CitizenDocumentsException("Invalid configuration provided to access Citizen Document service", response.Response.Content.ReadAsStringAsync().Result as string);
             }
         }
 
@@ -125,6 +130,5 @@ namespace Kmd.Logic.CitizenDocuments.Client
 
             return this.internalClient;
         }
-
     }
 }

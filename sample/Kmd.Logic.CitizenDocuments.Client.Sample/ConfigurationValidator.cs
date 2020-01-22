@@ -1,15 +1,10 @@
 ﻿using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Kmd.Logic.CitizenDocuments.Client.sample
+namespace Kmd.Logic.CitizenDocuments.Client.Sample
 {
     internal class ConfigurationValidator
     {
         private readonly AppConfiguration configuration;
-
-
 
         public ConfigurationValidator(AppConfiguration configuration)
         {
@@ -25,11 +20,9 @@ namespace Kmd.Logic.CitizenDocuments.Client.sample
                 Log.Error(
                     "Invalid configuration. Please provide proper information to `appsettings.json`. Current data is: {@Settings}",
                     this.configuration);
-
-
-
                 return false;
             }
+
             return true;
         }
     }
