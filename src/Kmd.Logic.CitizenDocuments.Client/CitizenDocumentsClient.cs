@@ -78,7 +78,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     throw new CitizenDocumentsException("Unauthorized", response.Body as string);
 
                 default:
-                    throw new CitizenDocumentsException("Invalid configuration provided to access Citizen Document service", response.Body as string);
+                    throw new CitizenDocumentsException("An unexpected error occurred while processing the request", response.Body as string);
             }
         }
 
@@ -110,7 +110,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     throw new CitizenDocumentsException("Unauthorized", response.Response.Content.ReadAsStringAsync().Result as string);
 
                 default:
-                    throw new CitizenDocumentsException("Invalid configuration provided to access Citizen Document service", response.Response.Content.ReadAsStringAsync().Result as string);
+                    throw new CitizenDocumentsException("An unexpected error occurred while processing the request", response.Response.Content.ReadAsStringAsync().Result as string);
             }
         }
 
