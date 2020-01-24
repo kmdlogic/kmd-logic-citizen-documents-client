@@ -1,5 +1,5 @@
-﻿using Serilog;
-using System;
+﻿using System;
+using Serilog;
 
 namespace Kmd.Logic.CitizenDocuments.Client.Sample
 {
