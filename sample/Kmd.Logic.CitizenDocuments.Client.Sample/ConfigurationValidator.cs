@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using System;
+using Serilog;
 
 namespace Kmd.Logic.CitizenDocuments.Client.Sample
 {
@@ -15,7 +16,9 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
         {
             if (string.IsNullOrWhiteSpace(this.configuration.TokenProvider?.ClientId)
                 || string.IsNullOrWhiteSpace(this.configuration.TokenProvider?.ClientSecret)
-                || this.configuration.SubscriptionId == null)
+                || string.IsNullOrWhiteSpace(this.configuration.TokenProvider?.AuthorizationScope)
+                || !Guid.TryParse(this.configuration.SubscriptionId, out _)
+                || !Guid.TryParse(this.configuration.ConfigurationId, out _))
             {
                 Log.Error(
                     "Invalid configuration. Please provide proper information to `appsettings.json`. Current data is: {@Settings}",
