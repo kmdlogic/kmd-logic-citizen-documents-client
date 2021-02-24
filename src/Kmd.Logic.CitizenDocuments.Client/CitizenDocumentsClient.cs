@@ -173,7 +173,8 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 bytesRead = await stream.ReadAsync(buffer, 0, size).ConfigureAwait(false);
                 await blob.PutBlockAsync(base64BlockId, new MemoryStream(buffer, 0, bytesRead), null).ConfigureAwait(false);
                 blockList.Add(base64BlockId);
-            } while (bytesRead == size);
+            }
+            while (bytesRead == size);
             await blob.PutBlockListAsync(blockList).ConfigureAwait(false);
             stream.Dispose();
             return "ok";
