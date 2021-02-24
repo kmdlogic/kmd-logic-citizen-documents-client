@@ -93,8 +93,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     throw new CitizenDocumentsException("An unexpected error occurred while processing the request", response.Body as string);
             }
         }
-
-
         /// <summary>
         /// Uploads the single citizen document.
         /// </summary>
@@ -112,8 +110,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
         public async Task<CitizenDocumentUploadResponse> UploadAttachment1WithHttpMessagesAsync(string configurationId, int retentionPeriodInDays, string cpr, string documentType, IFormFile document, string documentName, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
         {
             var client = this.CreateClient();
-
-
             var response1 = await client.StorageAccessWithHttpMessagesAsync(
                                    subscriptionId: new Guid(this.options.SubscriptionId),
                                    documentName: documentName).ConfigureAwait(false);
@@ -142,70 +138,44 @@ namespace Kmd.Logic.CitizenDocuments.Client
         public async Task<string> UploadDocumentAzureStorage(IFormFile document, string documentName, CloudBlobContainer container, int size = 100000)
         {
             var documentId = Guid.NewGuid();
-            var _documentName = string.Empty;
+            var docName = string.Empty;
             if (!string.IsNullOrWhiteSpace(documentName) && string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(documentName)))
             {
-                _documentName = Path.GetFileNameWithoutExtension(document.FileName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+                docName = Path.GetFileNameWithoutExtension(document.FileName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
             }
             else
             {
-                _documentName = documentName ?? Path.GetFileNameWithoutExtension(document.FileName);
+                docName = documentName ?? Path.GetFileNameWithoutExtension(document.FileName);
 
                 if (!string.IsNullOrEmpty(Path.GetExtension(documentName)) && !string.IsNullOrEmpty(Path.GetExtension(document.FileName)))
                 {
-                    _documentName = Path.GetFileNameWithoutExtension(documentName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+                    docName = Path.GetFileNameWithoutExtension(documentName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
 
                 }
                 else
                 {
-                    _documentName= documentName.Trim() + "_" + documentId + ".pdf";
+                    docName = documentName.Trim() + "_" + documentId + ".pdf";
                 }
             }
-            
-            
-            CloudBlockBlob blob = container.GetBlockBlobReference(_documentName);
-
-            // local variable to track the current number of bytes read into buffer
+            CloudBlockBlob blob = container.GetBlockBlobReference(docName);
             int bytesRead;
-
-            // track the current block number as the code iterates through the file
             int blockNumber = 0;
-
             Stream stream = document.OpenReadStream();
-            // Create list to track blockIds, it will be needed after the loop
             List<string> blockList = new List<string>();
-
             do
             {
-                // increment block number by 1 each iteration
                 blockNumber++;
-
-                // set block ID as a string and convert it to Base64 which is the required format
                 string blockId = $"{blockNumber:0000000}";
                 string base64BlockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(blockId));
-
-                // create buffer and retrieve chunk
                 byte[] buffer = new byte[size];
                 bytesRead = await stream.ReadAsync(buffer, 0, size).ConfigureAwait(false);
-
-                // Upload buffer chunk to Azure
                 await blob.PutBlockAsync(base64BlockId, new MemoryStream(buffer, 0, bytesRead), null).ConfigureAwait(false);
-
-                // add the current blockId into our list
                 blockList.Add(base64BlockId);
-
-                // While bytesRead == size it means there is more data left to read and process
             } while (bytesRead == size);
-
-            // add the blockList to the Azure which allows the resource to stick together the chunks
             await blob.PutBlockListAsync(blockList).ConfigureAwait(false);
-
-            // make sure to dispose the stream once your are done
             stream.Dispose();
             return "ok";
         }
-
-
         /// <summary>
         ///  Sends the documents to citizens.
         /// </summary>
