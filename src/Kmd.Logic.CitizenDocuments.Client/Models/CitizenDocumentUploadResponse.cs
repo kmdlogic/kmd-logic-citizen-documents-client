@@ -24,11 +24,9 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         /// Initializes a new instance of the CitizenDocumentUploadResponse
         /// class.
         /// </summary>
-        /// <param name="documentId"></param>
         /// <param name="documentType">Possible values include:
-        /// 'citizenDocument', 'digitalPostCoverLetter',
-        /// 'snailMailCoverLetter'</param>
-        /// <param name="fileAccessPageUrl"></param>
+        /// 'CitizenDocument', 'DigitalPostCoverLetter',
+        /// 'SnailMailCoverLetter'</param>
         public CitizenDocumentUploadResponse(System.Guid? documentId = default(System.Guid?), string documentType = default(string), string fileAccessPageUrl = default(string))
         {
             DocumentId = documentId;
@@ -48,8 +46,8 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         public System.Guid? DocumentId { get; set; }
 
         /// <summary>
-        /// Gets or sets possible values include: 'citizenDocument',
-        /// 'digitalPostCoverLetter', 'snailMailCoverLetter'
+        /// Gets or sets possible values include: 'CitizenDocument',
+        /// 'DigitalPostCoverLetter', 'SnailMailCoverLetter'
         /// </summary>
         [JsonProperty(PropertyName = "documentType")]
         public string DocumentType { get; set; }

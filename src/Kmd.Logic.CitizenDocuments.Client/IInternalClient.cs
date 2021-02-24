@@ -79,8 +79,8 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <param name='retentionPeriodInDays'>
         /// </param>
         /// <param name='documentType'>
-        /// Possible values include: 'citizenDocument',
-        /// 'digitalPostCoverLetter', 'snailMailCoverLetter'
+        /// Possible values include: 'CitizenDocument',
+        /// 'DigitalPostCoverLetter', 'SnailMailCoverLetter'
         /// </param>
         /// <param name='document'>
         /// </param>
@@ -127,7 +127,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// </summary>
         /// <param name='subscriptionId'>
         /// </param>
-        /// <param name='sendCitizenDocumentRequest'>
+        /// <param name='request'>
         /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
@@ -135,7 +135,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<SendCitizenDocumentResponse>> SendDocumentWithHttpMessagesAsync(System.Guid subscriptionId, SendCitizenDocumentRequest sendCitizenDocumentRequest, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<SendCitizenDocumentResponse>> SendDocumentWithHttpMessagesAsync(System.Guid subscriptionId, SendCitizenDocumentRequest request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Edit citizen document configuration settings.
@@ -154,6 +154,36 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// The cancellation token.
         /// </param>
         Task<HttpOperationResponse<object>> EditConfigWithHttpMessagesAsync(System.Guid subscriptionId, System.Guid configurationId, CitizenDocumentProviderConfigRequest request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Gets link to storage with access to upload document.
+        /// </summary>
+        /// <param name='subscriptionId'>
+        /// </param>
+        /// <param name='documentName'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<string>> StorageAccessWithHttpMessagesAsync(System.Guid subscriptionId, string documentName, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Updates the upload data to db
+        /// </summary>
+        /// <param name='subscriptionId'>
+        /// </param>
+        /// <param name='request'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<object>> UpdateDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CitizenDocumentUploadRequestModel request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Kmd.Logic.CitizenDocuments.Client.Models;
 using Kmd.Logic.Identity.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Rest;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Kmd.Logic.CitizenDocuments.Client
 {
@@ -82,6 +87,111 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
         }
 
+
+        /// <summary>
+        /// Uploads the single citizen document.
+        /// </summary>
+        /// <param name="configurationId">Citizen document provider config id.</param>
+        /// <param name="retentionPeriodInDays">Retention period of the uploaded document.</param>
+        /// <param name="cpr">Citizen CPR no.</param>
+        /// <param name="documentType">Type of the citizen document.</param>
+        /// <param name="document">Original citizen document.</param>
+        /// <param name="documentName">Preferred name of citizen document.</param>
+        /// <returns>The fileaccess page details or error if isn't valid.</returns>
+        /// <exception cref="ValidationException">Missing cpr number.</exception>
+        /// <exception cref="SerializationException">Unable to process the service response.</exception>
+        /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
+        /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
+        public async Task<CitizenDocumentUploadResponse> UploadAttachment1WithHttpMessagesAsync(string configurationId, int retentionPeriodInDays, string cpr, string documentType, IFormFile document, string documentName, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
+        {
+            var client = this.CreateClient();
+
+
+            var response1 = await client.StorageAccessWithHttpMessagesAsync(
+                                   subscriptionId: new Guid(this.options.SubscriptionId),
+                                   documentName: documentName).ConfigureAwait(false);
+            var responseUri = new Uri(response1.ToString());
+
+            CloudBlobContainer container = new CloudBlobContainer(new Uri(""),
+                new StorageCredentials(""));
+            var uploadresponse = await UploadDocumentAzureStorage(document, documentName, container, 100000).ConfigureAwait(false);
+            var updateResponse = await client.UpdateDataToDbWithHttpMessagesAsync(
+                                subscriptionId: new Guid(this.options.SubscriptionId),
+                                request: citizenDocumentUploadRequestModel).ConfigureAwait(false);
+            switch (updateResponse.Response.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    return (CitizenDocumentUploadResponse)updateResponse.Body;
+
+                case System.Net.HttpStatusCode.Unauthorized:
+                    throw new CitizenDocumentsException("Unauthorized", updateResponse.Body as string);
+
+                default:
+                    throw new CitizenDocumentsException("Invalid configuration provided to access Citizen Document service", updateResponse.Body as string);
+            }
+
+        }
+
+        public async Task<string> UploadDocumentAzureStorage(IFormFile document, string name, CloudBlobContainer container, int size = 100000)
+        {
+            var documentId = Guid.NewGuid();
+            var filename = string.Empty;
+            if (!string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(name)))
+            {
+                filename = Path.GetFileNameWithoutExtension(document.FileName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+            }
+
+            var documentName = name ?? Path.GetFileNameWithoutExtension(document.FileName);
+
+            if (!string.IsNullOrEmpty(Path.GetExtension(name)) && !string.IsNullOrEmpty(Path.GetExtension(document.FileName)))
+            {
+                filename = Path.GetFileNameWithoutExtension(name).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+
+            }
+            return documentName.Trim() + "_" + documentId + ".pdf";
+            CloudBlockBlob blob = container.GetBlockBlobReference(name);
+
+            // local variable to track the current number of bytes read into buffer
+            int bytesRead;
+
+            // track the current block number as the code iterates through the file
+            int blockNumber = 0;
+
+            Stream stream = document.OpenReadStream();
+            // Create list to track blockIds, it will be needed after the loop
+            List<string> blockList = new List<string>();
+
+            do
+            {
+                // increment block number by 1 each iteration
+                blockNumber++;
+
+                // set block ID as a string and convert it to Base64 which is the required format
+                string blockId = $"{blockNumber:0000000}";
+                string base64BlockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(blockId));
+
+                // create buffer and retrieve chunk
+                byte[] buffer = new byte[size];
+                bytesRead = await stream.ReadAsync(buffer, 0, size).ConfigureAwait(false);
+
+                // Upload buffer chunk to Azure
+                await blob.PutBlockAsync(base64BlockId, new MemoryStream(buffer, 0, bytesRead), null).ConfigureAwait(false);
+
+                // add the current blockId into our list
+                blockList.Add(base64BlockId);
+
+                // While bytesRead == size it means there is more data left to read and process
+            } while (bytesRead == size);
+
+            // add the blockList to the Azure which allows the resource to stick together the chunks
+            await blob.PutBlockListAsync(blockList).ConfigureAwait(false);
+
+            // make sure to dispose the stream once your are done
+            stream.Dispose();
+            return "ok";
+        }
+
+
         /// <summary>
         ///  Sends the documents to citizens.
         /// </summary>
@@ -96,7 +206,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
 
             var response = await client.SendDocumentWithHttpMessagesAsync(
                                 subscriptionId: new Guid(this.options.SubscriptionId),
-                                sendCitizenDocumentRequest: sendCitizenDocumentRequest).ConfigureAwait(false);
+                                request: sendCitizenDocumentRequest).ConfigureAwait(false);
 
             switch (response.Response.StatusCode)
             {
