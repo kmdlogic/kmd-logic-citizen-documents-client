@@ -132,24 +132,31 @@ namespace Kmd.Logic.CitizenDocuments.Client
 
         }
 
-        public async Task<string> UploadDocumentAzureStorage(IFormFile document, string name, CloudBlobContainer container, int size = 100000)
+        public async Task<string> UploadDocumentAzureStorage(IFormFile document, string documentName, CloudBlobContainer container, int size = 100000)
         {
             var documentId = Guid.NewGuid();
-            var filename = string.Empty;
-            if (!string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(name)))
+            var _documentName = string.Empty;
+            if (!string.IsNullOrWhiteSpace(documentName) && string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(documentName)))
             {
-                filename = Path.GetFileNameWithoutExtension(document.FileName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+                _documentName = Path.GetFileNameWithoutExtension(document.FileName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
             }
-
-            var documentName = name ?? Path.GetFileNameWithoutExtension(document.FileName);
-
-            if (!string.IsNullOrEmpty(Path.GetExtension(name)) && !string.IsNullOrEmpty(Path.GetExtension(document.FileName)))
+            else
             {
-                filename = Path.GetFileNameWithoutExtension(name).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+                _documentName = documentName ?? Path.GetFileNameWithoutExtension(document.FileName);
 
+                if (!string.IsNullOrEmpty(Path.GetExtension(documentName)) && !string.IsNullOrEmpty(Path.GetExtension(document.FileName)))
+                {
+                    _documentName = Path.GetFileNameWithoutExtension(documentName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+
+                }
+                else
+                {
+                    _documentName= documentName.Trim() + "_" + documentId + ".pdf";
+                }
             }
-            return documentName.Trim() + "_" + documentId + ".pdf";
-            CloudBlockBlob blob = container.GetBlockBlobReference(name);
+            
+            
+            CloudBlockBlob blob = container.GetBlockBlobReference(_documentName);
 
             // local variable to track the current number of bytes read into buffer
             int bytesRead;
