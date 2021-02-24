@@ -109,8 +109,13 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
         /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
-        public async Task<CitizenDocumentUploadResponse> UploadAttachment1WithHttpMessagesAsync(string configurationId, int retentionPeriodInDays, string cpr, string documentType, IFormFile document, string documentName, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
+        public async Task<CitizenDocumentUploadResponse> UploadAttachment1WithHttpMessagesAsync(Guid configurationId, int retentionPeriodInDays, string cpr, string documentType, IFormFile document, string documentName, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
         {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
             var client = this.CreateClient();
             var response1 = await client.StorageAccessWithHttpMessagesAsync(
                                    subscriptionId: new Guid(this.options.SubscriptionId),
@@ -120,10 +125,17 @@ namespace Kmd.Logic.CitizenDocuments.Client
             CloudBlobContainer container = new CloudBlobContainer(
                 new Uri(string.Empty),
                 new StorageCredentials(string.Empty));
-            var uploadresponse = await this.UploadDocumentAzureStorage(document, documentName, container, 100000).ConfigureAwait(false);
+            await this.UploadDocumentAzureStorage(document, documentName, container, 100000).ConfigureAwait(false);
+            var uploadRequestModel = new CitizenDocumentUploadRequestModel()
+            {
+                CitizenDocumentConfigId = configurationId,
+                Cpr = cpr,
+                DocumentType = documentType,
+                RetentionPeriodInDays = retentionPeriodInDays,
+            };
             var updateResponse = await client.UpdateDataToDbWithHttpMessagesAsync(
-                                subscriptionId: new Guid(this.options.SubscriptionId),
-                                request: citizenDocumentUploadRequestModel).ConfigureAwait(false);
+                                 subscriptionId: new Guid(this.options.SubscriptionId),
+                                 request: citizenDocumentUploadRequestModel).ConfigureAwait(false);
             switch (updateResponse.Response.StatusCode)
             {
                 case System.Net.HttpStatusCode.OK:
@@ -137,7 +149,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
         }
 
-        public async Task<string> UploadDocumentAzureStorage(IFormFile document, string documentName, CloudBlobContainer container, int size = 100000)
+        private async Task<string> UploadDocumentAzureStorage(IFormFile document, string documentName, CloudBlobContainer container, int size = 100000)
         {
             var documentId = Guid.NewGuid();
             var docName = string.Empty;
@@ -160,24 +172,31 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
 
             CloudBlockBlob blob = container.GetBlockBlobReference(docName);
-            int bytesRead;
-            int blockNumber = 0;
-            Stream stream = document.OpenReadStream();
-            List<string> blockList = new List<string>();
-            do
+            try
             {
-                blockNumber++;
-                string blockId = $"{blockNumber:0000000}";
-                string base64BlockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(blockId));
-                byte[] buffer = new byte[size];
-                bytesRead = await stream.ReadAsync(buffer, 0, size).ConfigureAwait(false);
-                await blob.PutBlockAsync(base64BlockId, new MemoryStream(buffer, 0, bytesRead), null).ConfigureAwait(false);
-                blockList.Add(base64BlockId);
+                int bytesRead;
+                int blockNumber = 0;
+                Stream stream = document.OpenReadStream();
+                List<string> blockList = new List<string>();
+                do
+                {
+                    blockNumber++;
+                    string blockId = $"{blockNumber:0000000}";
+                    string base64BlockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(blockId));
+                    byte[] buffer = new byte[size];
+                    bytesRead = await stream.ReadAsync(buffer, 0, size).ConfigureAwait(false);
+                    await blob.PutBlockAsync(base64BlockId, new MemoryStream(buffer, 0, bytesRead), null).ConfigureAwait(false);
+                    blockList.Add(base64BlockId);
+                }
+                while (bytesRead == size);
+                await blob.PutBlockListAsync(blockList).ConfigureAwait(false);
+                stream.Dispose();
+                return "ok";
             }
-            while (bytesRead == size);
-            await blob.PutBlockListAsync(blockList).ConfigureAwait(false);
-            stream.Dispose();
-            return "ok";
+            catch (ArgumentNullException ex)
+            {
+                return ex.ToString();
+            }
         }
 
         /// <summary>
