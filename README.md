@@ -31,8 +31,7 @@ Perhaps the easiest way to configure the CitizenDocuments client is from Applica
   "TokenProvider": {
     "ClientId": "",
     "ClientSecret": "",
-    "AuthorizationScope": "https://logicidentityprod.onmicrosoft.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/.default",
-    "AuthorizationTokenIssuer": "https://login.microsoftonline.com/logicidentityprod.onmicrosoft.com/oauth2/v2.0/token"
+    "AuthorizationScope": ""
   }
 }
 ```
@@ -40,7 +39,7 @@ Perhaps the easiest way to configure the CitizenDocuments client is from Applica
 To get started:
 
 1. Create a subscription in [Logic Console](https://console.kmdlogic.io). This will provide you the `SubscriptionId`.
-2. Request a client credential. Once issued you can view the `ClientId` and `ClientSecret` in [Logic Console](https://console.kmdlogic.io).
+2. Request a client credential. Once issued you can view the `ClientId`, `ClientSecret` and `AuthorizationScope` in [Logic Console](https://console.kmdlogic.io).
 3. Create a CitizenDocuments configuration. Select the Digital Post configuration and upload the details. This will give you the `CitizenDocumentsConfigurationId`.
 
 ## Sample application

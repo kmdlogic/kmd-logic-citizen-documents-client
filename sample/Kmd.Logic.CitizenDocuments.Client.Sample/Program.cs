@@ -54,18 +54,23 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 return "The validation of provider configuration details failed";
             }
 
-            using (var httpClient = new HttpClient())
+            var tokenProviderOptions = new LogicTokenProviderOptions
             {
-                LogicTokenProviderOptions tokenProviderOptions = new LogicTokenProviderOptions()
-                {
-                    AuthorizationScope = configuration.TokenProvider.AuthorizationScope,
-                    AuthorizationTokenIssuer = new Uri(configuration.TokenProvider.AuthorizationTokenIssuer.ToString()),
-                    ClientId = configuration.TokenProvider.ClientId,
-                    ClientSecret = configuration.TokenProvider.ClientSecret,
-                };
+                AuthorizationScope = configuration.TokenProvider.AuthorizationScope,
+                ClientId = configuration.TokenProvider.ClientId,
+                ClientSecret = configuration.TokenProvider.ClientSecret,
+            };
+
+            if (configuration.TokenProvider.AuthorizationTokenIssuer != null)
+            {
+                tokenProviderOptions.AuthorizationTokenIssuer = configuration.TokenProvider.AuthorizationTokenIssuer;
+            }
+
+            using (var httpClient = new HttpClient())
+            using (var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions))
+            {
                 configuration.Citizen.SubscriptionId = configuration.SubscriptionId;
                 configuration.Citizen.Serviceuri = configuration.Serviceuri;
-                var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
                 var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
                 var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(configuration.ConfigurationId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
 
