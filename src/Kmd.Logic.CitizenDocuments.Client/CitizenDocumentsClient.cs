@@ -93,6 +93,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     throw new CitizenDocumentsException("An unexpected error occurred while processing the request", response.Body as string);
             }
         }
+
         /// <summary>
         /// Uploads the single citizen document.
         /// </summary>
@@ -102,6 +103,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <param name="documentType">Type of the citizen document.</param>
         /// <param name="document">Original citizen document.</param>
         /// <param name="documentName">Preferred name of citizen document.</param>
+        /// <param name="citizenDocumentUploadRequestModel">citizenDocumentUploadRequestModel to update to db.</param>
         /// <returns>The fileaccess page details or error if isn't valid.</returns>
         /// <exception cref="ValidationException">Missing cpr number.</exception>
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
@@ -115,9 +117,10 @@ namespace Kmd.Logic.CitizenDocuments.Client
                                    documentName: documentName).ConfigureAwait(false);
             var responseUri = new Uri(response1.ToString());
 
-            CloudBlobContainer container = new CloudBlobContainer(new Uri(""),
-                new StorageCredentials(""));
-            var uploadresponse = await UploadDocumentAzureStorage(document, documentName, container, 100000).ConfigureAwait(false);
+            CloudBlobContainer container = new CloudBlobContainer(
+                new Uri(string.Empty),
+                new StorageCredentials(string.Empty));
+            var uploadresponse = await this.UploadDocumentAzureStorage(document, documentName, container, 100000).ConfigureAwait(false);
             var updateResponse = await client.UpdateDataToDbWithHttpMessagesAsync(
                                 subscriptionId: new Guid(this.options.SubscriptionId),
                                 request: citizenDocumentUploadRequestModel).ConfigureAwait(false);
@@ -132,7 +135,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 default:
                     throw new CitizenDocumentsException("Invalid configuration provided to access Citizen Document service", updateResponse.Body as string);
             }
-
         }
 
         public async Task<string> UploadDocumentAzureStorage(IFormFile document, string documentName, CloudBlobContainer container, int size = 100000)
@@ -150,13 +152,13 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 if (!string.IsNullOrEmpty(Path.GetExtension(documentName)) && !string.IsNullOrEmpty(Path.GetExtension(document.FileName)))
                 {
                     docName = Path.GetFileNameWithoutExtension(documentName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
-
                 }
                 else
                 {
                     docName = documentName.Trim() + "_" + documentId + ".pdf";
                 }
             }
+
             CloudBlockBlob blob = container.GetBlockBlobReference(docName);
             int bytesRead;
             int blockNumber = 0;
@@ -176,6 +178,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             stream.Dispose();
             return "ok";
         }
+
         /// <summary>
         ///  Sends the documents to citizens.
         /// </summary>
