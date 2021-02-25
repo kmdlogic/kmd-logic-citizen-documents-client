@@ -117,9 +117,12 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
 
             var client = this.CreateClient();
+            var documentId = Guid.NewGuid();
+            var storageDocName = citizenDocumentUploadRequestModel.DocumentName.Trim().Replace(".", string.Empty) + "_" + documentId + ".pdf";
             var responseSasUri = await client.StorageAccessWithHttpMessagesAsync(
                                    subscriptionId: new Guid(this.options.SubscriptionId),
-                                   documentName: citizenDocumentUploadRequestModel.DocumentName).ConfigureAwait(false);
+                                   documentName: storageDocName).ConfigureAwait(false);
+
             var sasTokenUri = new Uri(responseSasUri.Body);
 
             var containerAddress = new Uri($"{sasTokenUri.Scheme}://{sasTokenUri.Host}/{sasTokenUri.AbsolutePath.Split('/')[1]}");
@@ -127,7 +130,9 @@ namespace Kmd.Logic.CitizenDocuments.Client
             CloudBlobContainer container = new CloudBlobContainer(
                 containerAddress,
                 new StorageCredentials(sasTokenUri.Query));
-            await UploadDocumentAzureStorage(document, citizenDocumentUploadRequestModel.DocumentName, container, 100000).ConfigureAwait(false);
+
+            await UploadDocumentAzureStorage(document, storageDocName, container, 100000).ConfigureAwait(false);
+
             var updateResponse = await client.UpdateDataToDbWithHttpMessagesAsync(
                                  subscriptionId: new Guid(this.options.SubscriptionId),
                                  request: citizenDocumentUploadRequestModel).ConfigureAwait(false);
@@ -146,42 +151,16 @@ namespace Kmd.Logic.CitizenDocuments.Client
 
         private static async Task<string> UploadDocumentAzureStorage(Stream document, string documentName, CloudBlobContainer container, int size = 100000)
         {
-            var documentId = Guid.NewGuid();
-           // document.Close();
             if (documentName == null)
             {
                 throw new ArgumentNullException(nameof(documentName));
             }
-            else
-            {
-                documentName = documentName.Trim().Replace(".", string.Empty) + "_" + documentId + ".pdf";
-            }
-            //var docName = string.Empty;
-            //if (!string.IsNullOrWhiteSpace(documentName) && string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(documentName)))
-            //{
-            //    docName = Path.GetFileNameWithoutExtension(document.FileName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
-            //}
-            //else
-            //{
-            //    docName = documentName ?? Path.GetFileNameWithoutExtension(document.FileName);
-
-            //    if (!string.IsNullOrEmpty(Path.GetExtension(documentName)) && !string.IsNullOrEmpty(Path.GetExtension(document.FileName)))
-            //    {
-            //        docName = Path.GetFileNameWithoutExtension(documentName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
-            //    }
-            //    else
-            //    {
-            //        docName = documentName.Trim() + "_" + documentId + ".pdf";
-            //    }
-            //}
 
             CloudBlockBlob blob = container.GetBlockBlobReference(documentName);
             try
             {
                 int bytesRead;
                 int blockNumber = 0;
-                //Stream stream = document.OpenReadStream();
-                Stream stream = File.OpenRead(document);
                 List<string> blockList = new List<string>();
                 do
                 {
