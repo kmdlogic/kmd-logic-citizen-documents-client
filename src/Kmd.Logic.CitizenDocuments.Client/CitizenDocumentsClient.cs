@@ -104,7 +104,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
         /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
-        public async Task<CitizenDocumentUploadResponse> UploadLargeFileAttachmentWithHttpMessagesAsync(IFormFile document, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
+        public async Task<CitizenDocumentUploadResponse> UploadLargeFileAttachmentWithHttpMessagesAsync(Stream document, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
         {
             if (document == null)
             {
@@ -120,11 +120,13 @@ namespace Kmd.Logic.CitizenDocuments.Client
             var responseSasUri = await client.StorageAccessWithHttpMessagesAsync(
                                    subscriptionId: new Guid(this.options.SubscriptionId),
                                    documentName: citizenDocumentUploadRequestModel.DocumentName).ConfigureAwait(false);
-            var responseUri = new Uri(responseSasUri.ToString());
+            var sasTokenUri = new Uri(responseSasUri.Body);
+
+            var containerAddress = new Uri($"{sasTokenUri.Scheme}://{sasTokenUri.Host}/{sasTokenUri.AbsolutePath.Split('/')[1]}");
 
             CloudBlobContainer container = new CloudBlobContainer(
-                new Uri(string.Empty),
-                new StorageCredentials(string.Empty));
+                containerAddress,
+                new StorageCredentials(sasTokenUri.Query));
             await UploadDocumentAzureStorage(document, citizenDocumentUploadRequestModel.DocumentName, container, 100000).ConfigureAwait(false);
             var updateResponse = await client.UpdateDataToDbWithHttpMessagesAsync(
                                  subscriptionId: new Guid(this.options.SubscriptionId),
@@ -142,34 +144,44 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
         }
 
-        private static async Task<string> UploadDocumentAzureStorage(IFormFile document, string documentName, CloudBlobContainer container, int size = 100000)
+        private static async Task<string> UploadDocumentAzureStorage(Stream document, string documentName, CloudBlobContainer container, int size = 100000)
         {
             var documentId = Guid.NewGuid();
-            var docName = string.Empty;
-            if (!string.IsNullOrWhiteSpace(documentName) && string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(documentName)))
+           // document.Close();
+            if (documentName == null)
             {
-                docName = Path.GetFileNameWithoutExtension(document.FileName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+                throw new ArgumentNullException(nameof(documentName));
             }
             else
             {
-                docName = documentName ?? Path.GetFileNameWithoutExtension(document.FileName);
-
-                if (!string.IsNullOrEmpty(Path.GetExtension(documentName)) && !string.IsNullOrEmpty(Path.GetExtension(document.FileName)))
-                {
-                    docName = Path.GetFileNameWithoutExtension(documentName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
-                }
-                else
-                {
-                    docName = documentName.Trim() + "_" + documentId + ".pdf";
-                }
+                documentName = documentName.Trim().Replace(".", string.Empty) + "_" + documentId + ".pdf";
             }
+            //var docName = string.Empty;
+            //if (!string.IsNullOrWhiteSpace(documentName) && string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(documentName)))
+            //{
+            //    docName = Path.GetFileNameWithoutExtension(document.FileName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+            //}
+            //else
+            //{
+            //    docName = documentName ?? Path.GetFileNameWithoutExtension(document.FileName);
 
-            CloudBlockBlob blob = container.GetBlockBlobReference(docName);
+            //    if (!string.IsNullOrEmpty(Path.GetExtension(documentName)) && !string.IsNullOrEmpty(Path.GetExtension(document.FileName)))
+            //    {
+            //        docName = Path.GetFileNameWithoutExtension(documentName).Trim() + "_" + documentId + Path.GetExtension(document.FileName);
+            //    }
+            //    else
+            //    {
+            //        docName = documentName.Trim() + "_" + documentId + ".pdf";
+            //    }
+            //}
+
+            CloudBlockBlob blob = container.GetBlockBlobReference(documentName);
             try
             {
                 int bytesRead;
                 int blockNumber = 0;
-                Stream stream = document.OpenReadStream();
+                //Stream stream = document.OpenReadStream();
+                Stream stream = File.OpenRead(document);
                 List<string> blockList = new List<string>();
                 do
                 {
@@ -177,13 +189,13 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     string blockId = $"{blockNumber:0000000}";
                     string base64BlockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(blockId));
                     byte[] buffer = new byte[size];
-                    bytesRead = await stream.ReadAsync(buffer, 0, size).ConfigureAwait(false);
+                    bytesRead = await document.ReadAsync(buffer, 0, size).ConfigureAwait(false);
                     await blob.PutBlockAsync(base64BlockId, new MemoryStream(buffer, 0, bytesRead), null).ConfigureAwait(false);
                     blockList.Add(base64BlockId);
                 }
                 while (bytesRead == size);
                 await blob.PutBlockListAsync(blockList).ConfigureAwait(false);
-                stream.Dispose();
+                document.Dispose();
                 return "ok";
             }
             catch (ArgumentNullException ex)

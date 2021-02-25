@@ -73,7 +73,8 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 configuration.Citizen.Serviceuri = configuration.Serviceuri;
                 var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
                 var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(configuration.ConfigurationId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
-                var uploadWithLargeSizeDocument = await citizenDocumentClient.UploadLargeFileAttachmentWithHttpMessagesAsync((Microsoft.AspNetCore.Http.IFormFile)configuration.Document, new CitizenDocumentUploadRequestModel
+                configuration.Document.Close();
+                var uploadWithLargeSizeDocument = await citizenDocumentClient.UploadLargeFileAttachmentWithHttpMessagesAsync(configuration.Document, new CitizenDocumentUploadRequestModel
                 {
                     SubscriptionId = new Guid(configuration.SubscriptionId),
                     CitizenDocumentConfigId = new Guid(configuration.ConfigurationId),
