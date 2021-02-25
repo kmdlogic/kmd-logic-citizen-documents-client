@@ -125,7 +125,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             CloudBlobContainer container = new CloudBlobContainer(
                 new Uri(string.Empty),
                 new StorageCredentials(string.Empty));
-            await this.UploadDocumentAzureStorage(document, documentName, container, 100000).ConfigureAwait(false);
+            await UploadDocumentAzureStorage(document, documentName, container, 100000).ConfigureAwait(false);
             var uploadRequestModel = new CitizenDocumentUploadRequestModel()
             {
                 CitizenDocumentConfigId = configurationId,
@@ -149,7 +149,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
         }
 
-        private async Task<string> UploadDocumentAzureStorage(IFormFile document, string documentName, CloudBlobContainer container, int size = 100000)
+        private static async Task<string> UploadDocumentAzureStorage(IFormFile document, string documentName, CloudBlobContainer container, int size = 100000)
         {
             var documentId = Guid.NewGuid();
             var docName = string.Empty;
