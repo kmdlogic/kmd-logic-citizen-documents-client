@@ -97,42 +97,35 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <summary>
         /// Uploads the single citizen document.
         /// </summary>
-        /// <param name="configurationId">Citizen document provider config id.</param>
-        /// <param name="retentionPeriodInDays">Retention period of the uploaded document.</param>
-        /// <param name="cpr">Citizen CPR no.</param>
-        /// <param name="documentType">Type of the citizen document.</param>
         /// <param name="document">Original citizen document.</param>
-        /// <param name="documentName">Preferred name of citizen document.</param>
         /// <param name="citizenDocumentUploadRequestModel">citizenDocumentUploadRequestModel to update to db.</param>
         /// <returns>The fileaccess page details or error if isn't valid.</returns>
         /// <exception cref="ValidationException">Missing cpr number.</exception>
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
         /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
-        public async Task<CitizenDocumentUploadResponse> UploadLargeFileAttachmentWithHttpMessagesAsync(Guid configurationId, int retentionPeriodInDays, string cpr, string documentType, IFormFile document, string documentName, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
+        public async Task<CitizenDocumentUploadResponse> UploadLargeFileAttachmentWithHttpMessagesAsync(IFormFile document, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
         {
             if (document == null)
             {
                 throw new ArgumentNullException(nameof(document));
             }
 
+            if (citizenDocumentUploadRequestModel == null)
+            {
+                throw new ArgumentNullException(nameof(citizenDocumentUploadRequestModel));
+            }
+
             var client = this.CreateClient();
-            var response1 = await client.StorageAccessWithHttpMessagesAsync(
+            var responseSasUri = await client.StorageAccessWithHttpMessagesAsync(
                                    subscriptionId: new Guid(this.options.SubscriptionId),
-                                   documentName: documentName).ConfigureAwait(false);
-            var responseUri = new Uri(response1.ToString());
+                                   documentName: citizenDocumentUploadRequestModel.DocumentName).ConfigureAwait(false);
+            var responseUri = new Uri(responseSasUri.ToString());
 
             CloudBlobContainer container = new CloudBlobContainer(
                 new Uri(string.Empty),
                 new StorageCredentials(string.Empty));
-            await UploadDocumentAzureStorage(document, documentName, container, 100000).ConfigureAwait(false);
-            var uploadRequestModel = new CitizenDocumentUploadRequestModel()
-            {
-                CitizenDocumentConfigId = configurationId,
-                Cpr = cpr,
-                DocumentType = documentType,
-                RetentionPeriodInDays = retentionPeriodInDays,
-            };
+            await UploadDocumentAzureStorage(document, citizenDocumentUploadRequestModel.DocumentName, container, 100000).ConfigureAwait(false);
             var updateResponse = await client.UpdateDataToDbWithHttpMessagesAsync(
                                  subscriptionId: new Guid(this.options.SubscriptionId),
                                  request: citizenDocumentUploadRequestModel).ConfigureAwait(false);
