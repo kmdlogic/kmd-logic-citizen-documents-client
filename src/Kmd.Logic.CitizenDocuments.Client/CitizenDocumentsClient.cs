@@ -109,7 +109,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
         /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
-        public async Task<CitizenDocumentUploadResponse> UploadAttachment1WithHttpMessagesAsync(Guid configurationId, int retentionPeriodInDays, string cpr, string documentType, IFormFile document, string documentName, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
+        public async Task<CitizenDocumentUploadResponse> UploadLargeFileAttachmentWithHttpMessagesAsync(Guid configurationId, int retentionPeriodInDays, string cpr, string documentType, IFormFile document, string documentName, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
         {
             if (document == null)
             {
