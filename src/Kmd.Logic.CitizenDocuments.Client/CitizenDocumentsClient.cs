@@ -204,7 +204,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 List<string> blockList = new List<string>();
                 do
                 {
-                    Console.WriteLine(blockNumber);
                     blockNumber++;
                     string blockId = $"{blockNumber:0000000}";
                     string base64BlockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(blockId));
