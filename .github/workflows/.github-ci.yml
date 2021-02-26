@@ -1,4 +1,4 @@
-name: Automation Library CI/CD
+name: Citizen Documents Client NuGet CI
 
 env:
   PROJPATH: './src/Kmd.Logic.CitizenDocuments.Client'
