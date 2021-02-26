@@ -7,13 +7,13 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
     {
         public LogicTokenProviderOptions TokenProvider { get; set; } = new LogicTokenProviderOptions();
 
-        public string SubscriptionId { get; set; } = string.Empty;
+        public string SubscriptionId { get; set; }
 
-        public string ConfigurationId { get; set; } = string.Empty;
+        public string ConfigurationId { get; set; }
 
         public Uri ServiceUri { get; set; } = new Uri("https://gateway.kmdlogic.io/citizen-documents/v1");
 
-        public string Cpr { get; set; } = "string.Empty";
+        public string Cpr { get; set; }
 
         public int RetentionPeriodInDays { get; set; } = 3;
 
