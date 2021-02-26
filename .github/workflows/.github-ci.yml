@@ -1,0 +1,55 @@
+name: Automation Library CI/CD
+
+env:
+  PROJPATH: './src/Kmd.Logic.Gateway.Automation'
+  DOTNET_VERSION: '3.1.301'
+
+on:
+  push:
+    branches: [ master, develop ]
+    paths: 
+    - 'src/**'
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get current time
+      uses: 1466587594/get-current-time@v2
+      id: current-time
+      with:
+        format: YYYYMMDD-HHmm
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Install dependencies
+      run: dotnet restore '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj'
+
+    - name: Build - PreRelease
+      run: dotnet build '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj' --configuration Debug --no-restore -p:VersionSuffix=dev-${{ steps.current-time.outputs.formattedTime }}
+      if: GITHUB.REF != 'refs/heads/master'
+    - name: Build - Release
+      run: dotnet build '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj' --configuration Release --no-restore
+      if: GITHUB.REF == 'refs/heads/master'
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+
+    - name: Pack - PreRelease
+      run: dotnet pack '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj' --output ${{ env.PROJPATH }}/nupkgs --no-restore -p:VersionSuffix=dev-${{ steps.current-time.outputs.formattedTime }}
+      if: GITHUB.REF != 'refs/heads/master'
+    - name: Pack - Release
+      run: dotnet pack '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj' --output ${{ env.PROJPATH }}/nupkgs --no-restore
+      if: GITHUB.REF == 'refs/heads/master'
+
+    - name: Publish NuGet
+      run: dotnet nuget push ${{ env.PROJPATH }}/nupkgs/Kmd.Logic.Gateway.Automation*.nupkg --api-key ${{ secrets.APIKEYNUGETGALLERY }} --source https://api.nuget.org/v3/index.json
+      if: GITHUB.REF == 'refs/heads/develop' || GITHUB.REF == 'refs/heads/master'
