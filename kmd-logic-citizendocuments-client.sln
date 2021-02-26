@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{59B0FA9B-A297-459C-881B-EA1441FE8827}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\.github-ci.yml = .github\workflows\.github-ci.yml
-		appveyor.yml = appveyor.yml
 		build.ps1 = build.ps1
 		build.sh = build.sh
 		Directory.Build.props = Directory.Build.props
