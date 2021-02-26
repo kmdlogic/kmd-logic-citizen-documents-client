@@ -1,16 +1,16 @@
 name: Automation Library CI/CD
 
 env:
-  PROJPATH: './src/Kmd.Logic.Gateway.Automation'
+  PROJPATH: './src/Kmd.Logic.CitizenDocuments.Client'
   DOTNET_VERSION: '3.1.301'
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master, dev ]
     paths: 
     - 'src/**'
   pull_request:
-    branches: [ master, develop ]
+    branches: [ master, dev ]
 
 jobs:
   build:
@@ -31,25 +31,22 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Install dependencies
-      run: dotnet restore '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj'
+      run: dotnet restore '${{ env.PROJPATH }}/Kmd.Logic.CitizenDocuments.Client.csproj'
 
     - name: Build - PreRelease
-      run: dotnet build '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj' --configuration Debug --no-restore -p:VersionSuffix=dev-${{ steps.current-time.outputs.formattedTime }}
+      run: dotnet build '${{ env.PROJPATH }}/Kmd.Logic.CitizenDocuments.Client.csproj' --configuration Debug --no-restore -p:VersionSuffix=dev-${{ steps.current-time.outputs.formattedTime }}
       if: GITHUB.REF != 'refs/heads/master'
     - name: Build - Release
-      run: dotnet build '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj' --configuration Release --no-restore
+      run: dotnet build '${{ env.PROJPATH }}/Kmd.Logic.CitizenDocuments.Client.csproj' --configuration Release --no-restore
       if: GITHUB.REF == 'refs/heads/master'
 
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
-
     - name: Pack - PreRelease
-      run: dotnet pack '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj' --output ${{ env.PROJPATH }}/nupkgs --no-restore -p:VersionSuffix=dev-${{ steps.current-time.outputs.formattedTime }}
+      run: dotnet pack '${{ env.PROJPATH }}/Kmd.Logic.CitizenDocuments.Client.csproj' --output ${{ env.PROJPATH }}/nupkgs --no-restore -p:VersionSuffix=dev-${{ steps.current-time.outputs.formattedTime }}
       if: GITHUB.REF != 'refs/heads/master'
     - name: Pack - Release
-      run: dotnet pack '${{ env.PROJPATH }}/Kmd.Logic.Gateway.Automation.csproj' --output ${{ env.PROJPATH }}/nupkgs --no-restore
+      run: dotnet pack '${{ env.PROJPATH }}/Kmd.Logic.CitizenDocuments.Client.csproj' --output ${{ env.PROJPATH }}/nupkgs --no-restore
       if: GITHUB.REF == 'refs/heads/master'
 
     - name: Publish NuGet
-      run: dotnet nuget push ${{ env.PROJPATH }}/nupkgs/Kmd.Logic.Gateway.Automation*.nupkg --api-key ${{ secrets.APIKEYNUGETGALLERY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ env.PROJPATH }}/nupkgs/Kmd.Logic.CitizenDocuments.Client*.nupkg --api-key ${{ secrets.APIKEYNUGETGALLERY }} --source https://api.nuget.org/v3/index.json
       if: GITHUB.REF == 'refs/heads/develop' || GITHUB.REF == 'refs/heads/master'
