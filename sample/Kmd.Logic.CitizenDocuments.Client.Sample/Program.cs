@@ -69,7 +69,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
             using var httpClient = new HttpClient();
             using var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
             var options = new CitizenDocumentsOptions(
-                configuration.Serviceuri,
+                configuration.ServiceUri,
                 configuration.SubscriptionId);
 
             using var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, options);

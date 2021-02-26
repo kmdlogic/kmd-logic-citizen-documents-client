@@ -11,7 +11,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
         public string ConfigurationId { get; set; } = string.Empty;
 
-        public Uri Serviceuri { get; set; } = new Uri("https://kmd-logic-api-prod-webapp.azurewebsites.net");
+        public Uri ServiceUri { get; set; } = new Uri("https://kmd-logic-api-prod-webapp.azurewebsites.net");
 
         public string Cpr { get; set; } = "string.Empty";
 
