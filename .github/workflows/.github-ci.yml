@@ -48,5 +48,5 @@ jobs:
       if: GITHUB.REF == 'refs/heads/master'
 
     - name: Publish NuGet
-      run: dotnet nuget push ${{ env.PROJPATH }}/nupkgs/Kmd.Logic.CitizenDocuments.Client*.nupkg --api-key ${{ secrets.APIKEYNUGETGALLERY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ env.PROJPATH }}/nupkgs/Kmd.Logic.CitizenDocuments.Client*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
       if: GITHUB.REF == 'refs/heads/develop' || GITHUB.REF == 'refs/heads/master'
