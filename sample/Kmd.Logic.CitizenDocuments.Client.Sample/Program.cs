@@ -68,9 +68,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
             using var httpClient = new HttpClient();
             using var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
-            var options = new CitizenDocumentsOptions(
-                configuration.ServiceUri,
-                configuration.SubscriptionId);
+            var options = new CitizenDocumentsOptions(configuration.SubscriptionId, configuration.ServiceUri);
 
             using var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, options);
             using Stream stream = File.OpenRead(configuration.DocumentName);

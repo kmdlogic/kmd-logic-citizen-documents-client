@@ -20,10 +20,10 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// </summary>
         public string SubscriptionId { get; }
 
-        public CitizenDocumentsOptions(Uri serviceUri, string subscriptionId)
+        public CitizenDocumentsOptions(string subscriptionId, Uri serviceUri = null)
         {
-            this.ServiceUri = serviceUri;
             this.SubscriptionId = subscriptionId;
+            this.ServiceUri = serviceUri ?? new Uri("https://gateway.kmdlogic.io/citizen-documents/v1");
         }
     }
 }
