@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Kmd.Logic.CitizenDocuments.Client.Models;
 using Kmd.Logic.Identity.Authorization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -67,29 +66,27 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 tokenProviderOptions.AuthorizationTokenIssuer = configuration.TokenProvider.AuthorizationTokenIssuer;
             }
 
-            using (var httpClient = new HttpClient())
-            using (var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions))
-            {
-                configuration.Citizen.SubscriptionId = configuration.SubscriptionId;
-                configuration.Citizen.Serviceuri = configuration.Serviceuri;
-                var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
+            using var httpClient = new HttpClient();
+            using var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
+            var options = new CitizenDocumentsOptions(
+                configuration.Serviceuri,
+                configuration.SubscriptionId);
 
-                using Stream stream = File.OpenRead(configuration.DocumentName);
+            using var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, options);
+            using Stream stream = File.OpenRead(configuration.DocumentName);
 
-                var uploadWithLargeSizeDocument = await citizenDocumentClient.UploadFileAsync(stream, new CitizenDocumentUploadRequestModel
-                {
-                    SubscriptionId = new Guid(configuration.SubscriptionId),
-                    CitizenDocumentConfigId = new Guid(configuration.ConfigurationId),
-                    Cpr = configuration.Cpr,
-                    DocumentType = configuration.DocumentType,
-                    RetentionPeriodInDays = configuration.RetentionPeriodInDays,
-                    DocumentName = configuration.DocumentName,
-                }).ConfigureAwait(false);
+            var uploadWithLargeSizeDocument = await citizenDocumentClient.UploadFileAsync(stream, new UploadFileParameters(
+                    new Guid(configuration.ConfigurationId),
+                    new Guid(configuration.SubscriptionId),
+                    cpr: configuration.Cpr,
+                    documentName: configuration.DocumentName,
+                    documentType: configuration.DocumentType,
+                    retentionPeriodInDays: configuration.RetentionPeriodInDays))
+                .ConfigureAwait(false);
 
-                Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
+            Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
 
-                return "The citizen document was uploaded successfully";
-            }
+            return "The citizen document was uploaded successfully";
         }
     }
 }

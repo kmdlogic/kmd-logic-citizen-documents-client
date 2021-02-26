@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Kmd.Logic.Identity.Authorization;
 
 namespace Kmd.Logic.CitizenDocuments.Client.Sample
@@ -8,15 +7,13 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
     {
         public LogicTokenProviderOptions TokenProvider { get; set; } = new LogicTokenProviderOptions();
 
-        public CitizenDocumentsOptions Citizen { get; set; } = new CitizenDocumentsOptions();
-
         public string SubscriptionId { get; set; } = string.Empty;
 
         public string ConfigurationId { get; set; } = string.Empty;
 
-        public Uri Serviceuri { get; set; } = new Uri("http://google.com");
+        public Uri Serviceuri { get; set; } = new Uri("https://kmd-logic-api-prod-webapp.azurewebsites.net");
 
-        public string Cpr { get; set; } = string.Empty;
+        public string Cpr { get; set; } = "string.Empty";
 
         public int RetentionPeriodInDays { get; set; } = 3;
 
