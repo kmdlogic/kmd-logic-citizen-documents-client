@@ -104,7 +104,8 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
         /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
-        public async Task<CitizenDocumentUploadResponse> UploadFileAttachmentDirectlyToStorageAsync(Stream document, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
+        [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Nested arguments still needs to be checked before using")]
+        public async Task<CitizenDocumentUploadResponse> UploadFileAsync(Stream document, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
         {
             if (document == null)
             {
@@ -118,27 +119,27 @@ namespace Kmd.Logic.CitizenDocuments.Client
 
             if (citizenDocumentUploadRequestModel.CitizenDocumentConfigId == null)
             {
-                throw new Exception("Citizen Document Configuration is null");
+                throw new ArgumentNullException(nameof(citizenDocumentUploadRequestModel.CitizenDocumentConfigId));
             }
 
             if (citizenDocumentUploadRequestModel.Cpr == null)
             {
-                throw new Exception("Cpr is null");
+                throw new ArgumentNullException(nameof(citizenDocumentUploadRequestModel.Cpr));
             }
 
             if (citizenDocumentUploadRequestModel.DocumentName == null)
             {
-                throw new Exception("DocumentName is null");
+                throw new ArgumentNullException(nameof(citizenDocumentUploadRequestModel.DocumentName));
             }
 
             if (citizenDocumentUploadRequestModel.RetentionPeriodInDays == null)
             {
-                throw new Exception("RetentionPeriodInDays is null");
+                throw new ArgumentNullException(nameof(citizenDocumentUploadRequestModel.RetentionPeriodInDays));
             }
 
             if (citizenDocumentUploadRequestModel.DocumentType == null)
             {
-                throw new Exception("DocumentType is null");
+                throw new ArgumentNullException(nameof(citizenDocumentUploadRequestModel.DocumentType));
             }
 
             var client = this.CreateClient();
@@ -150,7 +151,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
 
             if (responseSasUri.Response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                throw new Exception("You don't have permission to upload");
+                throw new UnauthorizedAccessException("You don't have permission to upload");
             }
 
             var sasTokenUri = new Uri(responseSasUri.Body);
@@ -165,7 +166,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
 
             if (uploadResponse.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                throw new Exception("Upload Failed");
+                throw new ApplicationException("Upload Failed");
             }
 
             citizenDocumentUploadRequestModel.Id = documentId;
@@ -214,16 +215,14 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 }
                 while (bytesRead == size);
                 await blob.PutBlockListAsync(blockList).ConfigureAwait(false);
-                document.Dispose();
                 return new UploadResponseModel()
                 {
                     StatusCode = System.Net.HttpStatusCode.OK,
                     Message = "Upload Successfull",
                 };
             }
-            catch (ArgumentNullException ex)
+            catch (ApplicationException ex)
             {
-                Console.WriteLine(ex.ToString());
                 return new UploadResponseModel()
                 {
                     StatusCode = System.Net.HttpStatusCode.Conflict,

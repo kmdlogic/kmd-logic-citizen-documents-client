@@ -22,8 +22,6 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
         public string DocumentType { get; set; } = "CitizenDocument";
 
-        public Stream Document { get; set; } = File.OpenRead("TestPdfInA4Format.pdf");
-
         public string DocumentName { get; set; } = "TestPdfInA4Format.pdf";
 
         public string SendingSystem { get; set; } = "test";

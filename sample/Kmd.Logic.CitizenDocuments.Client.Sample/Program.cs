@@ -73,11 +73,10 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 configuration.Citizen.SubscriptionId = configuration.SubscriptionId;
                 configuration.Citizen.Serviceuri = configuration.Serviceuri;
                 var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
-                var uploadDocument = await citizenDocumentClient.UploadAttachmentWithHttpMessagesAsync(configuration.ConfigurationId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
 
-                Stream stream = File.OpenRead(configuration.DocumentName);
+                using Stream stream = File.OpenRead(configuration.DocumentName);
 
-                var uploadWithLargeSizeDocument = await citizenDocumentClient.UploadFileAttachmentDirectlyToStorageAsync(stream, new CitizenDocumentUploadRequestModel
+                var uploadWithLargeSizeDocument = await citizenDocumentClient.UploadFileAsync(stream, new CitizenDocumentUploadRequestModel
                 {
                     SubscriptionId = new Guid(configuration.SubscriptionId),
                     CitizenDocumentConfigId = new Guid(configuration.ConfigurationId),
@@ -89,21 +88,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
                 Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
 
-                var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new SendCitizenDocumentRequest
-                {
-                    ConfigurationId = new Guid(configuration.ConfigurationId),
-                    SendingSystem = configuration.SendingSystem,
-                    Cpr = configuration.Cpr,
-                    DocumentType = configuration.SendDocumentType,
-                    CitizenDocumentId = uploadWithLargeSizeDocument.DocumentId,
-                    Title = configuration.Title,
-                    DigitalPostCoverLetterId = uploadWithLargeSizeDocument.DocumentId,
-                    SnailMailCoverLetterId = uploadWithLargeSizeDocument.DocumentId,
-                }).ConfigureAwait(false);
-
-                Log.Information("The document is sent successfully and doc2mail provider response message id is {MessageId}", sendDocument.MessageId);
-                stream.Dispose();
-                return "The citizen document was uploaded and sent successfully";
+                return "The citizen document was uploaded successfully";
             }
         }
     }
