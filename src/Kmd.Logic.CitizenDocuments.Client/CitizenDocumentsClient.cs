@@ -104,7 +104,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
         /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
-        public async Task<CitizenDocumentUploadResponse> UploadLargeFileAttachmentWithHttpMessagesAsync(Stream document, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
+        public async Task<CitizenDocumentUploadResponse> UploadFileAttachmentDirectlyToStorageAsync(Stream document, CitizenDocumentUploadRequestModel citizenDocumentUploadRequestModel)
         {
             if (document == null)
             {
@@ -116,12 +116,42 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 throw new ArgumentNullException(nameof(citizenDocumentUploadRequestModel));
             }
 
+            if (citizenDocumentUploadRequestModel.CitizenDocumentConfigId == null)
+            {
+                throw new Exception("Citizen Document Configuration is null");
+            }
+
+            if (citizenDocumentUploadRequestModel.Cpr == null)
+            {
+                throw new Exception("Cpr is null");
+            }
+
+            if (citizenDocumentUploadRequestModel.DocumentName == null)
+            {
+                throw new Exception("DocumentName is null");
+            }
+
+            if (citizenDocumentUploadRequestModel.RetentionPeriodInDays == null)
+            {
+                throw new Exception("RetentionPeriodInDays is null");
+            }
+
+            if (citizenDocumentUploadRequestModel.DocumentType == null)
+            {
+                throw new Exception("DocumentType is null");
+            }
+
             var client = this.CreateClient();
             var documentId = Guid.NewGuid();
             var storageDocName = citizenDocumentUploadRequestModel.DocumentName.Trim().Replace(".", string.Empty) + "_" + documentId + ".pdf";
             var responseSasUri = await client.StorageAccessWithHttpMessagesAsync(
                                    subscriptionId: new Guid(this.options.SubscriptionId),
                                    documentName: storageDocName).ConfigureAwait(false);
+
+            if (responseSasUri.Response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new Exception("You don't have permission to upload");
+            }
 
             var sasTokenUri = new Uri(responseSasUri.Body);
 
@@ -131,7 +161,16 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 containerAddress,
                 new StorageCredentials(sasTokenUri.Query));
 
-            await UploadDocumentAzureStorage(document, storageDocName, container, 100000).ConfigureAwait(false);
+            var uploadResponse = await UploadDocumentToAzureStorage(document, storageDocName, container, 5000000).ConfigureAwait(false);
+
+            if (uploadResponse.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new Exception("Upload Failed");
+            }
+
+            citizenDocumentUploadRequestModel.Id = documentId;
+            citizenDocumentUploadRequestModel.DocumentUrl = $"{containerAddress.ToString()}/{storageDocName}";
+            citizenDocumentUploadRequestModel.Status = "Completed";
 
             var updateResponse = await client.UpdateDataToDbWithHttpMessagesAsync(
                                  subscriptionId: new Guid(this.options.SubscriptionId),
@@ -149,7 +188,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
         }
 
-        private static async Task<string> UploadDocumentAzureStorage(Stream document, string documentName, CloudBlobContainer container, int size = 100000)
+        private static async Task<UploadResponseModel> UploadDocumentToAzureStorage(Stream document, string documentName, CloudBlobContainer container, int size = 5000000)
         {
             if (documentName == null)
             {
@@ -164,6 +203,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 List<string> blockList = new List<string>();
                 do
                 {
+                    Console.WriteLine(blockNumber);
                     blockNumber++;
                     string blockId = $"{blockNumber:0000000}";
                     string base64BlockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(blockId));
@@ -175,11 +215,20 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 while (bytesRead == size);
                 await blob.PutBlockListAsync(blockList).ConfigureAwait(false);
                 document.Dispose();
-                return "ok";
+                return new UploadResponseModel()
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Message = "Upload Successfull",
+                };
             }
             catch (ArgumentNullException ex)
             {
-                return ex.ToString();
+                Console.WriteLine(ex.ToString());
+                return new UploadResponseModel()
+                {
+                    StatusCode = System.Net.HttpStatusCode.Conflict,
+                    Message = ex.Message,
+                };
             }
         }
 
