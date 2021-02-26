@@ -8,13 +8,22 @@ namespace Kmd.Logic.CitizenDocuments.Client
     public sealed class CitizenDocumentsOptions
     {
         /// <summary>
-        /// Gets or sets the Logic Citizen Document service.
+        /// Gets the Logic Citizen Document service.
         /// </summary>
         /// <remarks>
         /// This option should not be overridden except for testing purposes.
         /// </remarks>
-        public Uri Serviceuri { get; set; }
+        public Uri ServiceUri { get; }
 
-        public string SubscriptionId { get; set; }
+        /// <summary>
+        /// Gets the Logic subscription Id.
+        /// </summary>
+        public string SubscriptionId { get; }
+
+        public CitizenDocumentsOptions(string subscriptionId, Uri serviceUri = null)
+        {
+            this.SubscriptionId = subscriptionId;
+            this.ServiceUri = serviceUri ?? new Uri("https://gateway.kmdlogic.io/citizen-documents/v1");
+        }
     }
 }

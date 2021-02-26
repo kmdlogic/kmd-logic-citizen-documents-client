@@ -95,8 +95,8 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// <param name='retentionPeriodInDays'>
             /// </param>
             /// <param name='documentType'>
-            /// Possible values include: 'citizenDocument', 'digitalPostCoverLetter',
-            /// 'snailMailCoverLetter'
+            /// Possible values include: 'CitizenDocument', 'DigitalPostCoverLetter',
+            /// 'SnailMailCoverLetter'
             /// </param>
             /// <param name='document'>
             /// </param>
@@ -122,8 +122,8 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// <param name='retentionPeriodInDays'>
             /// </param>
             /// <param name='documentType'>
-            /// Possible values include: 'citizenDocument', 'digitalPostCoverLetter',
-            /// 'snailMailCoverLetter'
+            /// Possible values include: 'CitizenDocument', 'DigitalPostCoverLetter',
+            /// 'SnailMailCoverLetter'
             /// </param>
             /// <param name='document'>
             /// </param>
@@ -216,11 +216,11 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// </param>
             /// <param name='subscriptionId'>
             /// </param>
-            /// <param name='sendCitizenDocumentRequest'>
+            /// <param name='request'>
             /// </param>
-            public static SendCitizenDocumentResponse SendDocument(this IInternalClient operations, System.Guid subscriptionId, SendCitizenDocumentRequest sendCitizenDocumentRequest)
+            public static SendCitizenDocumentResponse SendDocument(this IInternalClient operations, System.Guid subscriptionId, SendCitizenDocumentRequest request)
             {
-                return operations.SendDocumentAsync(subscriptionId, sendCitizenDocumentRequest).GetAwaiter().GetResult();
+                return operations.SendDocumentAsync(subscriptionId, request).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -231,14 +231,14 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// </param>
             /// <param name='subscriptionId'>
             /// </param>
-            /// <param name='sendCitizenDocumentRequest'>
+            /// <param name='request'>
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<SendCitizenDocumentResponse> SendDocumentAsync(this IInternalClient operations, System.Guid subscriptionId, SendCitizenDocumentRequest sendCitizenDocumentRequest, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<SendCitizenDocumentResponse> SendDocumentAsync(this IInternalClient operations, System.Guid subscriptionId, SendCitizenDocumentRequest request, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.SendDocumentWithHttpMessagesAsync(subscriptionId, sendCitizenDocumentRequest, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.SendDocumentWithHttpMessagesAsync(subscriptionId, request, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -281,6 +281,78 @@ namespace Kmd.Logic.CitizenDocuments.Client
             public static async Task<object> EditConfigAsync(this IInternalClient operations, System.Guid subscriptionId, System.Guid configurationId, CitizenDocumentProviderConfigRequest request, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.EditConfigWithHttpMessagesAsync(subscriptionId, configurationId, request, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
+            /// Gets link to storage with access to upload document.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='subscriptionId'>
+            /// </param>
+            /// <param name='documentName'>
+            /// </param>
+            public static string StorageAccess(this IInternalClient operations, System.Guid subscriptionId, string documentName)
+            {
+                return operations.StorageAccessAsync(subscriptionId, documentName).GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Gets link to storage with access to upload document.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='subscriptionId'>
+            /// </param>
+            /// <param name='documentName'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<string> StorageAccessAsync(this IInternalClient operations, System.Guid subscriptionId, string documentName, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.StorageAccessWithHttpMessagesAsync(subscriptionId, documentName, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
+            /// Updates the upload data to db
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='subscriptionId'>
+            /// </param>
+            /// <param name='request'>
+            /// </param>
+            public static object UpdateDataToDb(this IInternalClient operations, System.Guid subscriptionId, CitizenDocumentUploadRequestModel request)
+            {
+                return operations.UpdateDataToDbAsync(subscriptionId, request).GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Updates the upload data to db
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='subscriptionId'>
+            /// </param>
+            /// <param name='request'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<object> UpdateDataToDbAsync(this IInternalClient operations, System.Guid subscriptionId, CitizenDocumentUploadRequestModel request, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.UpdateDataToDbWithHttpMessagesAsync(subscriptionId, request, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

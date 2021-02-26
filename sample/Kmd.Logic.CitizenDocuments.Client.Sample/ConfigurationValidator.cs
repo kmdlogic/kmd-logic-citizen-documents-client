@@ -5,24 +5,24 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 {
     internal class ConfigurationValidator
     {
-        private readonly AppConfiguration configuration;
+        private readonly AppConfiguration _configuration;
 
         public ConfigurationValidator(AppConfiguration configuration)
         {
-            this.configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
+            this._configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
         }
 
         public bool Validate()
         {
-            if (string.IsNullOrWhiteSpace(this.configuration.TokenProvider?.ClientId)
-                || string.IsNullOrWhiteSpace(this.configuration.TokenProvider?.ClientSecret)
-                || string.IsNullOrWhiteSpace(this.configuration.TokenProvider?.AuthorizationScope)
-                || !Guid.TryParse(this.configuration.SubscriptionId, out _)
-                || !Guid.TryParse(this.configuration.ConfigurationId, out _))
+            if (string.IsNullOrWhiteSpace(this._configuration.TokenProvider?.ClientId)
+                || string.IsNullOrWhiteSpace(this._configuration.TokenProvider?.ClientSecret)
+                || string.IsNullOrWhiteSpace(this._configuration.TokenProvider?.AuthorizationScope)
+                || !Guid.TryParse(this._configuration.SubscriptionId, out _)
+                || !Guid.TryParse(this._configuration.ConfigurationId, out _))
             {
                 Log.Error(
                     "Invalid configuration. Please provide proper information to `appsettings.json`. Current data is: {@Settings}",
-                    this.configuration);
+                    this._configuration);
                 return false;
             }
 
