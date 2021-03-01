@@ -25,7 +25,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             string documentName,
             string documentType,
             int retentionPeriodInDays = 5,
-            int bufferSize = 1024 * 1024)
+            int bufferSize = 5 * 1024 * 1024)
         {
             this.CitizenDocumentConfigId = citizenDocumentConfigId;
             this.SubscriptionId = subscriptionId;
