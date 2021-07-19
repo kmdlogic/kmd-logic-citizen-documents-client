@@ -44,14 +44,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
             this._options = options ?? throw new ArgumentNullException(nameof(options));
             this._tokenProviderFactory =
                 tokenProviderFactory ?? throw new ArgumentNullException(nameof(tokenProviderFactory));
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            if (string.IsNullOrEmpty(this._tokenProviderFactory.DefaultAuthorizationScope))
-            {
-                this._tokenProviderFactory.DefaultAuthorizationScope =
-                    "https://logicidentityprod.onmicrosoft.com/bb159109-0ccd-4b08-8d0d-80370cedda84/.default";
-            }
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
