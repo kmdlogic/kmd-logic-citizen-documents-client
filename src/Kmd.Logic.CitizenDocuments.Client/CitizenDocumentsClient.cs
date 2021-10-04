@@ -25,7 +25,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
     {
         private readonly HttpClient _httpClient;
         private readonly CitizenDocumentsOptions _options;
-        private readonly LogicTokenProviderFactory _tokenProviderFactory;
+        private readonly ITokenProviderFactory _tokenProviderFactory;
 
         private InternalClient _internalClient;
 
@@ -37,7 +37,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <param name="options">The required configuration options.</param>
         public CitizenDocumentsClient(
             HttpClient httpClient,
-            LogicTokenProviderFactory tokenProviderFactory,
+            ITokenProviderFactory tokenProviderFactory,
             CitizenDocumentsOptions options)
         {
             this._httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -254,6 +254,40 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     throw new CitizenDocumentsException(
                         "Provided citizen document id is invalid",
                         response.Response.Content.ReadAsStringAsync().Result);
+
+                case System.Net.HttpStatusCode.Unauthorized:
+                    throw new CitizenDocumentsException(
+                        "Unauthorized",
+                        response.Response.Content.ReadAsStringAsync().Result);
+
+                default:
+                    throw new CitizenDocumentsException(
+                        "An unexpected error occurred while processing the request",
+                        response.Response.Content.ReadAsStringAsync().Result);
+            }
+        }
+
+        /// <summary>
+        /// Creates a citizen document request.
+        /// </summary>
+        /// <param name="citizenDocumentProviderConfigRequest">Request model</param>
+        /// <returns>The citizen document response model.</returns>
+        /// <exception cref="SerializationException">Unable to process the service response.</exception>
+        /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
+        /// <exception cref="CitizenDocumentsException">Invalid Citizen configuration details.</exception>
+        public async Task<CitizenDocumentProviderConfigResponse> CreateProviderConfiguration(
+              CitizenDocumentProviderConfigRequest citizenDocumentProviderConfigRequest)
+        {
+            var client = this.CreateClient();
+
+            using var response = await client.SaveConfigWithHttpMessagesAsync(
+                subscriptionId: new Guid(this._options.SubscriptionId),
+                request: citizenDocumentProviderConfigRequest).ConfigureAwait(false);
+
+            switch (response.Response.StatusCode)
+            {
+                case System.Net.HttpStatusCode.Created:
+                    return (CitizenDocumentProviderConfigResponse)response.Body;
 
                 case System.Net.HttpStatusCode.Unauthorized:
                     throw new CitizenDocumentsException(

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Kmd.Logic.CitizenDocuments.Client.Models;
 using Kmd.Logic.Identity.Authorization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -72,9 +73,29 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
             using var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, options);
             using Stream stream = File.OpenRead(configuration.DocumentName);
+            var configId = Guid.NewGuid();
+            if (string.IsNullOrEmpty(configuration.ConfigurationId))
+            {
+                var requestToupload = new CitizenDocumentProviderConfigRequest
+                {
+                    AppTitle = "Create config",
+                    ConfigName = "Test Config",
+                    DigitalPostConfigurationId = Guid.NewGuid(),
+                    SystemName = "test",
+                    PageHeader = "test",
+                    Footer = "footer",
+                };
+
+                var citizenDocumentConfiguration = await citizenDocumentClient.CreateProviderConfiguration(requestToupload).ConfigureAwait(false);
+                configId = citizenDocumentConfiguration.ConfigurationId.Value;
+            }
+            else
+            {
+                configId = new Guid(configuration.ConfigurationId);
+            }
 
             var uploadWithLargeSizeDocument = await citizenDocumentClient.UploadFileAsync(stream, new UploadFileParameters(
-                    new Guid(configuration.ConfigurationId),
+                    configId,
                     new Guid(configuration.SubscriptionId),
                     cpr: configuration.Cpr,
                     documentName: configuration.DocumentName,
