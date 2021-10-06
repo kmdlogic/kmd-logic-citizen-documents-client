@@ -270,7 +270,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <summary>
         /// Creates a citizen document request.
         /// </summary>
-        /// <param name="citizenDocumentProviderConfigRequest">Request model</param>
+        /// <param name="citizenDocumentProviderConfigRequest">Request model.</param>
         /// <returns>The citizen document response model.</returns>
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
