@@ -7,6 +7,7 @@
 namespace Kmd.Logic.CitizenDocuments.Client
 {
     using Models;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -184,7 +185,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// </param>
             /// <param name='subscriptionId'>
             /// </param>
-            public static CitizenDocumentConfigResponse LoadProviderConfiguration(this IInternalClient operations, System.Guid subscriptionId)
+            public static IList<CitizenDocumentConfigResponse> LoadProviderConfiguration(this IInternalClient operations, System.Guid subscriptionId)
             {
                 return operations.LoadProviderConfigurationAsync(subscriptionId).GetAwaiter().GetResult();
             }
@@ -200,7 +201,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<CitizenDocumentConfigResponse> LoadProviderConfigurationAsync(this IInternalClient operations, System.Guid subscriptionId, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<IList<CitizenDocumentConfigResponse>> LoadProviderConfigurationAsync(this IInternalClient operations, System.Guid subscriptionId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.LoadProviderConfigurationWithHttpMessagesAsync(subscriptionId, null, cancellationToken).ConfigureAwait(false))
                 {

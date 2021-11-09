@@ -1082,7 +1082,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<CitizenDocumentConfigResponse>> LoadProviderConfigurationWithHttpMessagesAsync(System.Guid subscriptionId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<IList<CitizenDocumentConfigResponse>>> LoadProviderConfigurationWithHttpMessagesAsync(System.Guid subscriptionId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -1164,7 +1164,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 throw ex;
             }
             // Create Result
-            var _result = new HttpOperationResponse<CitizenDocumentConfigResponse>();
+            var _result = new HttpOperationResponse<IList<CitizenDocumentConfigResponse>>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
             // Deserialize Response
@@ -1173,7 +1173,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = SafeJsonConvert.DeserializeObject<CitizenDocumentConfigResponse>(_responseContent, DeserializationSettings);
+                    _result.Body = SafeJsonConvert.DeserializeObject<IList<CitizenDocumentConfigResponse>>(_responseContent, DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {

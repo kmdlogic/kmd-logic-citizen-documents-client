@@ -1,3 +1,7 @@
+3.0.1
+* Changed the response type of load provider config
+* Exposed Load Provider Configuration in client
+
 3.0.0
 * Changed the LogicTokenProviderFactory to ITokenProviderFactory
 * Exposed Create citizen Document Configuration in client 

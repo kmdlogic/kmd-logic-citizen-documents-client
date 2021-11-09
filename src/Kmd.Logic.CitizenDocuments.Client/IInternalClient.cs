@@ -120,7 +120,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<CitizenDocumentConfigResponse>> LoadProviderConfigurationWithHttpMessagesAsync(System.Guid subscriptionId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<IList<CitizenDocumentConfigResponse>>> LoadProviderConfigurationWithHttpMessagesAsync(System.Guid subscriptionId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Sends the documents to citizens

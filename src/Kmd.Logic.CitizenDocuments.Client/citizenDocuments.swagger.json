@@ -295,7 +295,10 @@
           "200": {
             "description": "The configuration is loaded successfully",
             "schema": {
-              "$ref": "#/definitions/CitizenDocumentConfigResponse"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CitizenDocumentConfigResponse"
+              }
             }
           },
           "400": {

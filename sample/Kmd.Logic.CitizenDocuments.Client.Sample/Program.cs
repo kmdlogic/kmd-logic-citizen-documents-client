@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Kmd.Logic.CitizenDocuments.Client.Models;
@@ -88,6 +89,9 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
                 var citizenDocumentConfiguration = await citizenDocumentClient.CreateProviderConfiguration(requestToupload).ConfigureAwait(false);
                 configId = citizenDocumentConfiguration.ConfigurationId.Value;
+
+                var loadedConfigurations = await citizenDocumentClient.LoadProviderConfiguration().ConfigureAwait(false);
+                Console.WriteLine(loadedConfigurations.First().ConfigId);
             }
             else
             {
