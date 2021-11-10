@@ -91,7 +91,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 configId = citizenDocumentConfiguration.ConfigurationId.Value;
 
                 var loadedConfigurations = await citizenDocumentClient.LoadProviderConfiguration().ConfigureAwait(false);
-                Console.WriteLine(loadedConfigurations.First().ConfigId);
+                Console.WriteLine(loadedConfigurations.FirstOrDefault().ConfigId);
             }
             else
             {

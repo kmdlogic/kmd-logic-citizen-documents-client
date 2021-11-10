@@ -1,5 +1,5 @@
 3.0.1
-* Changed the response type of load provider config
+* Changed the response type of load provider config to return list
 * Exposed Load Provider Configuration in client
 
 3.0.0
