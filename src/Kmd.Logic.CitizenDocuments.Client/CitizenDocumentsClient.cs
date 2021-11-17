@@ -301,6 +301,30 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
         }
 
+        public async Task<IList<CitizenDocumentConfigResponse>> LoadProviderConfiguration()
+        {
+            var client = this.CreateClient();
+
+            using var response = await client.LoadProviderConfigurationWithHttpMessagesAsync(
+                subscriptionId: new Guid(this._options.SubscriptionId)).ConfigureAwait(false);
+
+            switch (response.Response.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    return response.Body;
+
+                case System.Net.HttpStatusCode.Unauthorized:
+                    throw new CitizenDocumentsException(
+                        "Unauthorized",
+                        response.Response.Content.ReadAsStringAsync().Result);
+
+                default:
+                    throw new CitizenDocumentsException(
+                        "An unexpected error occurred while processing the request",
+                        response.Response.Content.ReadAsStringAsync().Result);
+            }
+        }
+
         private InternalClient CreateClient()
         {
             if (this._internalClient != null)
