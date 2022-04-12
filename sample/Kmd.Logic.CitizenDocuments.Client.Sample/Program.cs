@@ -110,7 +110,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
             Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
 
-            var cvrs = new List<string> { "88146328", "56482911" }
+            var cvrs = new List<string> { "88146328", "56482911" };
             using var companyDocumentClient = new CompanyDocumentsClient(httpClient, tokenProviderFactory, options);
             var uploadCompanyDocument = await companyDocumentClient.UploadAttachmentWithHttpMessagesAsync(
                 documentConfigurationId: configId,
