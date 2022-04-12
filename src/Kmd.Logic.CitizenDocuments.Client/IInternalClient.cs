@@ -183,7 +183,77 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<object>> UpdateDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CitizenDocumentUploadRequestModel request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<object>> UpdateDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CitizenDocumentUpdateRequest request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Upload's citizen/company document for companies
+        /// </summary>
+        /// <param name='subscriptionId'>
+        /// </param>
+        /// <param name='documentConfigurationId'>
+        /// </param>
+        /// <param name='cvrs'>
+        /// </param>
+        /// <param name='document'>
+        /// </param>
+        /// <param name='cpr'>
+        /// </param>
+        /// <param name='retentionPeriodInDays'>
+        /// </param>
+        /// <param name='companyDocumentType'>
+        /// Possible values include: 'Document', 'DigitalPostCoverLetter',
+        /// 'SnailMailCoverLetter'
+        /// </param>
+        /// <param name='documentName'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<object>> UploadAttachmentForCompaniesWithHttpMessagesAsync(System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, string cpr = default(string), int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Updates the upload data to db
+        /// </summary>
+        /// <param name='subscriptionId'>
+        /// </param>
+        /// <param name='request'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<object>> UpdateCompanyDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CompanyDocumentRequest request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Loads all uploaded documents based on cpr number
+        /// </summary>
+        /// <param name='cpr'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<IList<LoadDocumentResponse>>> GetFileAccessListByCPrWithHttpMessagesAsync(string cpr, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Loads all uploaded documents based on cvr number
+        /// </summary>
+        /// <param name='cvr'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<IList<LoadDocumentResponse>>> GetFileAccessListByCvrWithHttpMessagesAsync(string cvr, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

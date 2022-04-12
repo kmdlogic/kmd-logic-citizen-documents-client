@@ -7,6 +7,7 @@
 namespace Kmd.Logic.CitizenDocuments.Client
 {
     using Models;
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using System.Threading;
@@ -333,7 +334,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// </param>
             /// <param name='request'>
             /// </param>
-            public static object UpdateDataToDb(this IInternalClient operations, System.Guid subscriptionId, CitizenDocumentUploadRequestModel request)
+            public static object UpdateDataToDb(this IInternalClient operations, System.Guid subscriptionId, CitizenDocumentUpdateRequest request)
             {
                 return operations.UpdateDataToDbAsync(subscriptionId, request).GetAwaiter().GetResult();
             }
@@ -351,9 +352,173 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> UpdateDataToDbAsync(this IInternalClient operations, System.Guid subscriptionId, CitizenDocumentUploadRequestModel request, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> UpdateDataToDbAsync(this IInternalClient operations, System.Guid subscriptionId, CitizenDocumentUpdateRequest request, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.UpdateDataToDbWithHttpMessagesAsync(subscriptionId, request, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
+            /// Upload's citizen/company document for companies
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='subscriptionId'>
+            /// </param>
+            /// <param name='documentConfigurationId'>
+            /// </param>
+            /// <param name='cvrs'>
+            /// </param>
+            /// <param name='document'>
+            /// </param>
+            /// <param name='cpr'>
+            /// </param>
+            /// <param name='retentionPeriodInDays'>
+            /// </param>
+            /// <param name='companyDocumentType'>
+            /// Possible values include: 'Document', 'DigitalPostCoverLetter',
+            /// 'SnailMailCoverLetter'
+            /// </param>
+            /// <param name='documentName'>
+            /// </param>
+            public static object UploadAttachmentForCompanies(this IInternalClient operations, System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, string cpr = default(string), int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string))
+            {
+                return operations.UploadAttachmentForCompaniesAsync(subscriptionId, documentConfigurationId, cvrs, document, cpr, retentionPeriodInDays, companyDocumentType, documentName).GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Upload's citizen/company document for companies
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='subscriptionId'>
+            /// </param>
+            /// <param name='documentConfigurationId'>
+            /// </param>
+            /// <param name='cvrs'>
+            /// </param>
+            /// <param name='document'>
+            /// </param>
+            /// <param name='cpr'>
+            /// </param>
+            /// <param name='retentionPeriodInDays'>
+            /// </param>
+            /// <param name='companyDocumentType'>
+            /// Possible values include: 'Document', 'DigitalPostCoverLetter',
+            /// 'SnailMailCoverLetter'
+            /// </param>
+            /// <param name='documentName'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<object> UploadAttachmentForCompaniesAsync(this IInternalClient operations, System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, string cpr = default(string), int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.UploadAttachmentForCompaniesWithHttpMessagesAsync(subscriptionId, documentConfigurationId, cvrs, document, cpr, retentionPeriodInDays, companyDocumentType, documentName, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
+            /// Updates the upload data to db
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='subscriptionId'>
+            /// </param>
+            /// <param name='request'>
+            /// </param>
+            public static object UpdateCompanyDataToDb(this IInternalClient operations, System.Guid subscriptionId, CompanyDocumentRequest request)
+            {
+                return operations.UpdateCompanyDataToDbAsync(subscriptionId, request).GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Updates the upload data to db
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='subscriptionId'>
+            /// </param>
+            /// <param name='request'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<object> UpdateCompanyDataToDbAsync(this IInternalClient operations, System.Guid subscriptionId, CompanyDocumentRequest request, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.UpdateCompanyDataToDbWithHttpMessagesAsync(subscriptionId, request, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
+            /// Loads all uploaded documents based on cpr number
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='cpr'>
+            /// </param>
+            public static IList<LoadDocumentResponse> GetFileAccessListByCPr(this IInternalClient operations, string cpr)
+            {
+                return operations.GetFileAccessListByCPrAsync(cpr).GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Loads all uploaded documents based on cpr number
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='cpr'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<IList<LoadDocumentResponse>> GetFileAccessListByCPrAsync(this IInternalClient operations, string cpr, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.GetFileAccessListByCPrWithHttpMessagesAsync(cpr, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
+            /// Loads all uploaded documents based on cvr number
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='cvr'>
+            /// </param>
+            public static IList<LoadDocumentResponse> GetFileAccessListByCvr(this IInternalClient operations, string cvr)
+            {
+                return operations.GetFileAccessListByCvrAsync(cvr).GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Loads all uploaded documents based on cvr number
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='cvr'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<IList<LoadDocumentResponse>> GetFileAccessListByCvrAsync(this IInternalClient operations, string cvr, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.GetFileAccessListByCvrWithHttpMessagesAsync(cvr, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
