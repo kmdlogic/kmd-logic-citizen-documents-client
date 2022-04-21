@@ -1,13 +1,13 @@
-# KMD Logic CitizenDocuments Client
+# KMD Logic CitizenDocuments and CompanyDocument Client
 
-A dotnet client library for uploading and sending documents for citizens via the Logic platform.
+A dotnet client library for uploading and sending documents for citizens and companies via the Logic platform.
 
 ## How to use this client library
 
 In projects or components where you need to upload or send documents, add a NuGet package reference to [Kmd.Logic.CitizenDocuments.Client](https://www.nuget.org/packages/Kmd.Logic.CitizenDocuments.Client).
 
 The simplest example to get a citizens details is:
-
+ 
 ```csharp
 using (var httpClient = new HttpClient())
 {
@@ -17,14 +17,25 @@ using (var httpClient = new HttpClient())
      var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new Guid(configuration.SubscriptionId), new SendCitizenDocumentRequest
 }
 ```
+The simplest example to get a companies details is:
+ 
+```csharp
+using (var httpClient = new HttpClient())
+{
+     var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
+     var companyDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
+     var uploadDocument = await companyDocumentClient.UploadAttachmentWithHttpMessagesAsync(new Guid(configuration.SubscriptionId), configuration.ConfiguartionId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
+     var sendDocument = await companyDocumentClient.SendDocumentWithHttpMessagesAsync(new Guid(configuration.SubscriptionId), new SendCitizenDocumentRequest
+}
+```
 
 The `LogicTokenProviderFactory` authorizes access to the Logic platform through the use of a Logic Identity issued client credential. The authorization token is reused until it  expires. You would generally create a single instance of `LogicTokenProviderFactory`.
 
-The `CitizenDocumentsClient` accesses the Logic CitizenDocuments service which in turn interacts with one of the data providers.
+The `CitizenDocumentsClient` accesses the Logic CitizenDocuments and CompanyDocuments service which in turn interacts with one of the data providers.
 
-## How to configure the CitizenDocuments client
+## How to configure the CitizenDocuments or CompanyDocument client
 
-Perhaps the easiest way to configure the CitizenDocuments client is from Application Settings.
+Perhaps the easiest way to configure the CitizenDocuments client or CompanyDocument client is from Application Settings.
 
 ```json
 {
@@ -44,7 +55,7 @@ To get started:
 
 ## Sample application
 
-A simple console application is included to demonstrate how to call Logic CitizenDocuments API. You will need to provide the settings described above in `appsettings.json`.
+A simple console application is included to demonstrate how to call Logic CitizenDocuments and CompanyDocument API. You will need to provide the settings described above in `appsettings.json`.
 
 When run you should see the details of the _FileAccessPage_ and _messageId_ is printed to the console.
 
