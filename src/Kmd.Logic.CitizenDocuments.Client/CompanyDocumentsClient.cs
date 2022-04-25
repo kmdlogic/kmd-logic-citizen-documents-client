@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Kmd.Logic.CitizenDocuments.Client.Models;
 using Kmd.Logic.Identity.Authorization;
@@ -67,6 +68,29 @@ namespace Kmd.Logic.CitizenDocuments.Client
             {
                 case System.Net.HttpStatusCode.OK:
                     return (CompanyDocumentUploadResponse)response.Body;
+
+                case System.Net.HttpStatusCode.Unauthorized:
+                    throw new DocumentsException("Unauthorized", response.Body as string);
+
+                default:
+                    throw new DocumentsException(
+                        "An unexpected error occurred while processing the request",
+                        response.Body as string);
+            }
+        }
+
+        public async Task<CompanyDocumentResponse> UpdateCompanyDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CompanyDocumentRequest request)
+        {
+
+            var client = this.CreateClient();
+            using var response = await client.UpdateCompanyDataToDbWithHttpMessagesAsync(
+                subscriptionId: new Guid(this._options.SubscriptionId),
+                request).ConfigureAwait(false);
+
+            switch (response.Response.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    return (CompanyDocumentResponse)response.Body;
 
                 case System.Net.HttpStatusCode.Unauthorized:
                     throw new DocumentsException("Unauthorized", response.Body as string);

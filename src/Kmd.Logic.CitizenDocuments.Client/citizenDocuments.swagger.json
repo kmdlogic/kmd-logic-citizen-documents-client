@@ -728,7 +728,7 @@
           "200": {
             "description": "The data is updated successfully",
             "schema": {
-              "$ref": "#/definitions/CitizenDocumentUploadResponse"
+              "$ref": "#/definitions/CompanyDocumentResponse"
             }
           },
           "400": {
@@ -1247,6 +1247,27 @@
           "type": "string"
         },
         "documentName": {
+          "type": "string"
+        }
+      }
+    },
+    "CompanyDocumentResponse": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "companyDocumentType": {
+          "type": "string",
+          "enum": [
+            "Document",
+            "DigitalPostCoverLetter",
+            "SnailMailCoverLetter"
+          ]
+        },
+        "fileAccessPageUrl": {
+          "format": "uri",
           "type": "string"
         }
       }

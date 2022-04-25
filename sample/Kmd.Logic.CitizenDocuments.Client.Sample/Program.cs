@@ -121,6 +121,22 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 companyDocumentType: configuration.CompanyDocumentType,
                 documentName: configuration.DocumentName).ConfigureAwait(false);
 
+            var updateCompanyDocumentRequest = new CompanyDocumentRequest(
+                documentConfigurationId: configId,
+                cvrs: cvrs,
+                id: Guid.NewGuid(),
+                cpr: configuration.Cpr,
+                companyDocumentType: configuration.CompanyDocumentType,
+                documentUrl: "https://citizen-documents.prod.kmdlogic.io",
+                retentionPeriodInDays: configuration.RetentionPeriodInDays,
+                status: "Completed",
+                fileName: "test.png",
+                documentName: "test.png");
+
+            var updateCompanyDocument = await companyDocumentClient.UpdateCompanyDataToDbWithHttpMessagesAsync(
+               subscriptionId: new Guid(configuration.SubscriptionId),
+               request: updateCompanyDocumentRequest).ConfigureAwait(false);
+
             Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
 
             return "The citizen document was uploaded successfully";

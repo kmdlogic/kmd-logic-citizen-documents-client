@@ -2299,7 +2299,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = SafeJsonConvert.DeserializeObject<CitizenDocumentUploadResponse>(_responseContent, DeserializationSettings);
+                    _result.Body = SafeJsonConvert.DeserializeObject<CompanyDocumentResponse>(_responseContent, DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
