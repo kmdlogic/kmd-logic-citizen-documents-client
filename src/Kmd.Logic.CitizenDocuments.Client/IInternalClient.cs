@@ -230,6 +230,32 @@ namespace Kmd.Logic.CitizenDocuments.Client
         Task<HttpOperationResponse<object>> UpdateCompanyDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CompanyDocumentRequest request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// Gets the company document by id.
+        /// </summary>
+        /// <param name='documentId'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<object>> GeCompanyDocumentWithHttpMessagesAsync(System.Guid documentId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Loads the data for Company Document File Access Page.
+        /// </summary>
+        /// <param name='documentId'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<DocumentFileAccessPageData>> GetCompanyFileAccessPageDataWithHttpMessagesAsync(System.Guid documentId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// Loads all uploaded documents based on cpr number
         /// </summary>
         /// <param name='cpr'>

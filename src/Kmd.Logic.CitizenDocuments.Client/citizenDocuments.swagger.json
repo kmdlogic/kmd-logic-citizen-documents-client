@@ -757,6 +757,102 @@
         ]
       }
     },
+    "/subscriptions/document-download/company/{documentId}": {
+      "get": {
+        "tags": [
+          "CompanyDocumentFileAccess"
+        ],
+        "summary": "Gets the company document by id.",
+        "operationId": "GeCompanyDocument",
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The document is loaded successfully",
+            "schema": {
+              "$ref": "#/definitions/DocumentDownloadResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "410": {
+            "description": "Client Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/document-download/company/{documentId}/load-document-data": {
+      "get": {
+        "tags": [
+          "CompanyDocumentFileAccess"
+        ],
+        "summary": "Loads the data for Company Document File Access Page.",
+        "operationId": "GetCompanyFileAccessPageData",
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data is loaded successfully",
+            "schema": {
+              "$ref": "#/definitions/DocumentFileAccessPageData"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Document is not found"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/load-documents/{cpr}": {
       "get": {
         "tags": [
@@ -1151,6 +1247,49 @@
           "type": "string"
         },
         "documentName": {
+          "type": "string"
+        }
+      }
+    },
+    "DocumentDownloadResponse": {
+      "type": "object",
+      "properties": {
+        "documentFileId": {
+          "format": "uuid",
+          "description": "The unique identifier of the Document",
+          "type": "string"
+        },
+        "documentFileUri": {
+          "format": "uri",
+          "description": "The location of the Document",
+          "type": "string"
+        }
+      }
+    },
+    "DocumentFileAccessPageData": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string"
+        },
+        "retentionPeriodInDays": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "systemName": {
+          "type": "string"
+        },
+        "documentUploadedTime": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "appTitle": {
+          "type": "string"
+        },
+        "pageHeader": {
+          "type": "string"
+        },
+        "footer": {
           "type": "string"
         }
       }

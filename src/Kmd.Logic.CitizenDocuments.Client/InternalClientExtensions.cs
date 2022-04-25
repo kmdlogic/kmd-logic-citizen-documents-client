@@ -461,6 +461,70 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
 
             /// <summary>
+            /// Gets the company document by id.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='documentId'>
+            /// </param>
+            public static object GeCompanyDocument(this IInternalClient operations, System.Guid documentId)
+            {
+                return operations.GeCompanyDocumentAsync(documentId).GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Gets the company document by id.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='documentId'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<object> GeCompanyDocumentAsync(this IInternalClient operations, System.Guid documentId, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.GeCompanyDocumentWithHttpMessagesAsync(documentId, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
+            /// Loads the data for Company Document File Access Page.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='documentId'>
+            /// </param>
+            public static DocumentFileAccessPageData GetCompanyFileAccessPageData(this IInternalClient operations, System.Guid documentId)
+            {
+                return operations.GetCompanyFileAccessPageDataAsync(documentId).GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Loads the data for Company Document File Access Page.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='documentId'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<DocumentFileAccessPageData> GetCompanyFileAccessPageDataAsync(this IInternalClient operations, System.Guid documentId, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.GetCompanyFileAccessPageDataWithHttpMessagesAsync(documentId, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
             /// Loads all uploaded documents based on cpr number
             /// </summary>
             /// <param name='operations'>
