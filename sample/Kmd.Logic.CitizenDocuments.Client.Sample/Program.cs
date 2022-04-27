@@ -121,6 +121,8 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 companyDocumentType: configuration.CompanyDocumentType,
                 documentName: configuration.DocumentName).ConfigureAwait(false);
 
+            Log.Information($"The {configuration.CompanyDocumentType} document with id {uploadCompanyDocument.DocumentId} and file access page url {uploadCompanyDocument.FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
+
             var updateCompanyDocumentRequest = new CompanyDocumentRequest(
                 documentConfigurationId: configId,
                 cvrs: cvrs,
@@ -137,7 +139,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                subscriptionId: new Guid(configuration.SubscriptionId),
                request: updateCompanyDocumentRequest).ConfigureAwait(false);
 
-            Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
+            Log.Information($"The {configuration.CompanyDocumentType} document with id {updateCompanyDocument.DocumentId} and file access page url {updateCompanyDocument.FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
 
             return "The citizen document was uploaded successfully";
         }
