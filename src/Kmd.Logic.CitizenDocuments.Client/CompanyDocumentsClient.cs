@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Kmd.Logic.CitizenDocuments.Client.Models;
 using Kmd.Logic.Identity.Authorization;
 using Microsoft.Rest;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Kmd.Logic.CitizenDocuments.Client
 {
@@ -99,6 +102,108 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     throw new DocumentsException(
                         "An unexpected error occurred while processing the request",
                         response.Body as string);
+            }
+        }
+
+        public async Task<CompanyDocumentResponse> UploadCompanyFileAsync(
+           Stream document,
+           CompanyDocumentRequest parameters)
+        {
+            var bufferSize = 5 * 1024 * 1024;
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            var client = this.CreateClient();
+            var documentId = Guid.NewGuid();
+            var storageDocName = parameters.DocumentName.Trim().Replace(".", string.Empty) +
+                                 "_" + documentId + ".pdf";
+            using var responseSasUri = await client.StorageAccessWithHttpMessagesAsync(
+                subscriptionId: new Guid(this._options.SubscriptionId),
+                documentName: storageDocName).ConfigureAwait(false);
+
+            if (responseSasUri.Response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new UnauthorizedAccessException("You don't have permission to upload");
+            }
+
+            var sasTokenUri = new Uri(responseSasUri.Body);
+
+            var containerAddress =
+                new Uri($"{sasTokenUri.Scheme}://{sasTokenUri.Host}/{sasTokenUri.AbsolutePath.Split('/')[1]}");
+
+            CloudBlobContainer container = new CloudBlobContainer(
+                containerAddress,
+                new StorageCredentials(sasTokenUri.Query));
+
+            var uploadResponse = await UploadDocumentToAzureStorage(document, storageDocName, container, bufferSize)
+                .ConfigureAwait(false);
+
+            if (uploadResponse.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new ApplicationException("Upload Failed");
+            }
+
+            parameters.DocumentUrl = $"{containerAddress}/{storageDocName}";
+            parameters.Id = documentId;
+
+            return await this.UpdateCompanyDataToDbWithHttpMessagesAsync(
+                subscriptionId: new Guid(this._options.SubscriptionId),
+                parameters).ConfigureAwait(false);
+        }
+
+        private static async Task<UploadResponseModel> UploadDocumentToAzureStorage(
+           Stream document,
+           string documentName,
+           CloudBlobContainer container,
+           int size)
+        {
+            if (documentName == null)
+            {
+                throw new ArgumentNullException(nameof(documentName));
+            }
+
+            CloudBlockBlob blob = container.GetBlockBlobReference(documentName);
+
+            try
+            {
+                int bytesRead;
+                int blockNumber = 0;
+                List<string> blockList = new List<string>();
+                do
+                {
+                    blockNumber++;
+                    string blockId = $"{blockNumber:0000000}";
+                    string base64BlockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(blockId));
+                    byte[] buffer = new byte[size];
+                    bytesRead = await document.ReadAsync(buffer, 0, size).ConfigureAwait(false);
+                    using var bufferStream = new MemoryStream(buffer, 0, bytesRead);
+                    await blob.PutBlockAsync(base64BlockId, bufferStream, null)
+                        .ConfigureAwait(false);
+                    blockList.Add(base64BlockId);
+                }
+                while (bytesRead == size);
+
+                await blob.PutBlockListAsync(blockList).ConfigureAwait(false);
+                return new UploadResponseModel
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Message = "Upload successful",
+                };
+            }
+            catch (ApplicationException ex)
+            {
+                return new UploadResponseModel
+                {
+                    StatusCode = System.Net.HttpStatusCode.Conflict,
+                    Message = ex.Message,
+                };
             }
         }
 

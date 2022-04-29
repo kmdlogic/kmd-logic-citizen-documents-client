@@ -135,9 +135,9 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 fileName: "test.png",
                 documentName: "test.png");
 
-            var updateCompanyDocument = await companyDocumentClient.UpdateCompanyDataToDbWithHttpMessagesAsync(
-               subscriptionId: new Guid(configuration.SubscriptionId),
-               request: updateCompanyDocumentRequest).ConfigureAwait(false);
+            var updateCompanyDocument = await companyDocumentClient.UploadCompanyFileAsync(
+               document : stream,
+               parameters: updateCompanyDocumentRequest).ConfigureAwait(false);
 
             Log.Information($"The {configuration.CompanyDocumentType} document with id {updateCompanyDocument.DocumentId} and file access page url {updateCompanyDocument.FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
 
