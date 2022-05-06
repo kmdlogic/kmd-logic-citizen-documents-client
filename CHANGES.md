@@ -1,3 +1,6 @@
+3.1.0
+* Exposed upload company document in client
+
 3.0.1
 * Changed the response type of load provider config to return list
 * Exposed Load Provider Configuration in client
