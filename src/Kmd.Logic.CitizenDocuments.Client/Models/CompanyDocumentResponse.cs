@@ -9,28 +9,26 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
     using Newtonsoft.Json;
     using System.Linq;
 
-    public partial class CitizenDocumentUploadResponse
+    public partial class CompanyDocumentResponse
     {
         /// <summary>
-        /// Initializes a new instance of the CitizenDocumentUploadResponse
-        /// class.
+        /// Initializes a new instance of the CompanyDocumentResponse class.
         /// </summary>
-        public CitizenDocumentUploadResponse()
+        public CompanyDocumentResponse()
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the CitizenDocumentUploadResponse
-        /// class.
+        /// Initializes a new instance of the CompanyDocumentResponse class.
         /// </summary>
-        /// <param name="documentType">Possible values include:
-        /// 'CitizenDocument', 'DigitalPostCoverLetter',
+        /// <param name="companyDocumentType">Possible values include:
+        /// 'Document', 'DigitalPostCoverLetter',
         /// 'SnailMailCoverLetter'</param>
-        public CitizenDocumentUploadResponse(System.Guid? documentId = default(System.Guid?), string documentType = default(string), string fileAccessPageUrl = default(string))
+        public CompanyDocumentResponse(System.Guid? documentId = default(System.Guid?), string companyDocumentType = default(string), string fileAccessPageUrl = default(string))
         {
             DocumentId = documentId;
-            DocumentType = documentType;
+            CompanyDocumentType = companyDocumentType;
             FileAccessPageUrl = fileAccessPageUrl;
             CustomInit();
         }
@@ -46,11 +44,11 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         public System.Guid? DocumentId { get; set; }
 
         /// <summary>
-        /// Gets or sets possible values include: 'CitizenDocument',
+        /// Gets or sets possible values include: 'Document',
         /// 'DigitalPostCoverLetter', 'SnailMailCoverLetter'
         /// </summary>
-        [JsonProperty(PropertyName = "documentType")]
-        public string DocumentType { get; set; }
+        [JsonProperty(PropertyName = "companyDocumentType")]
+        public string CompanyDocumentType { get; set; }
 
         /// <summary>
         /// </summary>

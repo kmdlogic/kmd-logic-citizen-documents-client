@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -70,7 +71,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
             using var httpClient = new HttpClient();
             using var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
-            var options = new CitizenDocumentsOptions(configuration.SubscriptionId, configuration.ServiceUri);
+            var options = new DocumentsOptions(configuration.SubscriptionId, configuration.ServiceUri);
 
             using var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, options);
             using Stream stream = File.OpenRead(configuration.DocumentName);
@@ -108,6 +109,39 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 .ConfigureAwait(false);
 
             Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
+
+            var cvrs = new List<string> { "88146328", "56482911" };
+            using var companyDocumentClient = new CompanyDocumentsClient(httpClient, tokenProviderFactory, options);
+            var uploadCompanyDocument = await companyDocumentClient.UploadAttachmentWithHttpMessagesAsync(
+                documentConfigurationId: configId,
+                cvrs: cvrs,
+                document: stream,
+                cpr: configuration.Cpr,
+                retentionPeriodInDays: configuration.RetentionPeriodInDays,
+                companyDocumentType: configuration.CompanyDocumentType,
+                documentName: configuration.DocumentName).ConfigureAwait(false);
+
+            Log.Information($"The {configuration.CompanyDocumentType} document with id {uploadCompanyDocument.DocumentId} and file access page url {uploadCompanyDocument.FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
+
+            var updateCompanyDocumentRequest = new CompanyDocumentRequest(
+                documentConfigurationId: configId,
+                cvrs: cvrs,
+                id: Guid.NewGuid(),
+                cpr: configuration.Cpr,
+                companyDocumentType: configuration.CompanyDocumentType,
+                documentUrl: "https://citizen-documents.prod.kmdlogic.io",
+                retentionPeriodInDays: configuration.RetentionPeriodInDays,
+                status: "Completed",
+                fileName: "test.png",
+                documentName: "test.png");
+
+            using Stream companyDocumentStream = File.OpenRead(configuration.DocumentName);
+
+            var updateCompanyDocument = await companyDocumentClient.UploadCompanyFileAsync(
+               document: companyDocumentStream,
+               parameters: updateCompanyDocumentRequest).ConfigureAwait(false);
+
+            Log.Information($"The {configuration.CompanyDocumentType} document with id {updateCompanyDocument.DocumentId} and file access page url {updateCompanyDocument.FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
 
             return "The citizen document was uploaded successfully";
         }
