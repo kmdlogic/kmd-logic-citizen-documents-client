@@ -1,4 +1,4 @@
-# KMD Logic CitizenDocuments and CompanyDocuments Client
+# KMD Logic CitizenDocuments Client
 
 A dotnet client library for uploading and sending documents for citizens and companies via the Logic platform.
 
@@ -17,7 +17,7 @@ using (var httpClient = new HttpClient())
      var sendDocument = await citizenDocumentClient.SendDocumentWithHttpMessagesAsync(new Guid(configuration.SubscriptionId), new SendCitizenDocumentRequest
 }
 ```
-The simplest example for companyDocuments where you can upload or send documents:
+The simplest example for companyDocuments where you can upload the documents:
  
 ```csharp
 using (var httpClient = new HttpClient())
@@ -25,17 +25,16 @@ using (var httpClient = new HttpClient())
      var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
      var companyDocumentClient = new CompanyDocumentsClient(httpClient, tokenProviderFactory, configuration.Citizen);
      var uploadDocument = await companyDocumentClient.UploadAttachmentWithHttpMessagesAsync(new Guid(configuration.SubscriptionId), configuration.ConfiguartionId, configuration.RetentionPeriodInDays, configuration.Cpr, configuration.DocumentType, configuration.Document, configuration.DocumentName).ConfigureAwait(false);
-     var sendDocument = await companyDocumentClient.SendDocumentWithHttpMessagesAsync(new Guid(configuration.SubscriptionId), new SendCitizenDocumentRequest
 }
 ```
 
 The `LogicTokenProviderFactory` authorizes access to the Logic platform through the use of a Logic Identity issued client credential. The authorization token is reused until it  expires. You would generally create a single instance of `LogicTokenProviderFactory`.
 
-The `CitizenDocumentsClient` accesses the Logic CitizenDocuments and `CompanyDocumentsClient` accesses the Logic CompanyDocuments service which in turn interacts with one of the data providers.
+The `CitizenDocumentsClient` accesses the Logic CitizenDocuments and CompanyDocuments service which in turn interacts with one of the data providers.
 
-## How to configure the CitizenDocuments or CompanyDocuments client
+## How to configure the CitizenDocuments client 
 
-Perhaps the easiest way to configure the CitizenDocuments client or CompanyDocuments client is from Application Settings.
+Perhaps the easiest way to configure the CitizenDocuments client is from Application Settings.
 
 ```json
 {
