@@ -4,31 +4,31 @@ using System.Runtime.Serialization;
 namespace Kmd.Logic.CitizenDocuments.Client
 {
     [System.Serializable]
-    public class CitizenDocumentsException : Exception
+    public class DocumentsException : Exception
     {
         public string InnerMessage { get; }
 
-        public CitizenDocumentsException()
+        public DocumentsException()
         {
         }
 
-        public CitizenDocumentsException(string message, string innerMessage)
+        public DocumentsException(string message, string innerMessage)
            : base(message)
         {
             this.InnerMessage = innerMessage;
         }
 
-        public CitizenDocumentsException(string message, Exception innerException)
+        public DocumentsException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
-        protected CitizenDocumentsException(SerializationInfo info, StreamingContext context)
+        protected DocumentsException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
 
-        public CitizenDocumentsException(string message)
+        public DocumentsException(string message)
             : base(message)
         {
         }
