@@ -28,5 +28,10 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
         public string SendDocumentType { get; set; } = "alm brev";
 
         public string Title { get; set; } = "test";
+
+        public string Sender { get; set; }
+
+        public string DocumentComment { get; set; }
+
     }
 }

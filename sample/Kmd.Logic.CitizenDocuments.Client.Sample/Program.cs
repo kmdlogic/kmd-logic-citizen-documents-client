@@ -116,10 +116,11 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 documentConfigurationId: configId,
                 cvrs: cvrs,
                 document: stream,
-                cpr: configuration.Cpr,
                 retentionPeriodInDays: configuration.RetentionPeriodInDays,
                 companyDocumentType: configuration.CompanyDocumentType,
-                documentName: configuration.DocumentName).ConfigureAwait(false);
+                documentName: configuration.DocumentName,
+                sender: configuration.Sender,
+                documentComment: configuration.DocumentComment).ConfigureAwait(false);
 
             Log.Information($"The {configuration.CompanyDocumentType} document with id {uploadCompanyDocument.DocumentId} and file access page url {uploadCompanyDocument.FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
 
@@ -127,13 +128,14 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 documentConfigurationId: configId,
                 cvrs: cvrs,
                 id: Guid.NewGuid(),
-                cpr: configuration.Cpr,
                 companyDocumentType: configuration.CompanyDocumentType,
                 documentUrl: "https://citizen-documents.prod.kmdlogic.io",
                 retentionPeriodInDays: configuration.RetentionPeriodInDays,
                 status: "Completed",
                 fileName: "test.png",
-                documentName: "test.png");
+                documentName: "test.png",
+                sender: configuration.Sender,
+                documentComment: configuration.DocumentComment);
 
             using Stream companyDocumentStream = File.OpenRead(configuration.DocumentName);
 

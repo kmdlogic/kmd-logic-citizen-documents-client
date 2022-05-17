@@ -1,3 +1,6 @@
+3.1.1
+* Updated company document in client
+
 3.1.0
 * Exposed upload company document in client
 

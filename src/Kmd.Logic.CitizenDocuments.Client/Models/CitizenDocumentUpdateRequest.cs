@@ -6,6 +6,7 @@
 
 namespace Kmd.Logic.CitizenDocuments.Client.Models
 {
+    using Microsoft.Rest;
     using Newtonsoft.Json;
     using System.Linq;
 
@@ -115,5 +116,21 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         [JsonProperty(PropertyName = "documentName")]
         public string DocumentName { get; set; }
 
+        /// <summary>
+        /// Validate the object.
+        /// </summary>
+        /// <exception cref="ValidationException">
+        /// Thrown if validation fails
+        /// </exception>
+        public virtual void Validate()
+        {
+            if (DocumentName != null)
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(DocumentName, "^[a-zA-Z0-9]+$"))
+                {
+                    throw new ValidationException(ValidationRules.Pattern, "DocumentName", "^[a-zA-Z0-9]+$");
+                }
+            }
+        }
     }
 }

@@ -196,8 +196,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// </param>
         /// <param name='document'>
         /// </param>
-        /// <param name='cpr'>
-        /// </param>
         /// <param name='retentionPeriodInDays'>
         /// </param>
         /// <param name='companyDocumentType'>
@@ -206,13 +204,17 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// </param>
         /// <param name='documentName'>
         /// </param>
+        /// <param name='sender'>
+        /// </param>
+        /// <param name='documentComment'>
+        /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<object>> UploadAttachmentForCompaniesWithHttpMessagesAsync(System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, string cpr = default(string), int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<object>> UploadAttachmentForCompaniesWithHttpMessagesAsync(System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), string sender = default(string), string documentComment = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Updates the upload data to db

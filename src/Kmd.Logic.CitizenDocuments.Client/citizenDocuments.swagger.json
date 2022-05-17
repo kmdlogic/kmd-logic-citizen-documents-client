@@ -139,7 +139,9 @@
             "name": "retentionPeriodInDays",
             "in": "formData",
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "maximum": 999,
+            "minimum": 0
           },
           {
             "name": "documentType",
@@ -159,7 +161,8 @@
           {
             "name": "documentName",
             "in": "formData",
-            "type": "string"
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]+$"
           }
         ],
         "responses": {
@@ -614,11 +617,6 @@
             "format": "uuid"
           },
           {
-            "name": "cpr",
-            "in": "formData",
-            "type": "string"
-          },
-          {
             "name": "cvrs",
             "in": "formData",
             "required": true,
@@ -651,6 +649,17 @@
           },
           {
             "name": "documentName",
+            "in": "formData",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]+$"
+          },
+          {
+            "name": "sender",
+            "in": "formData",
+            "type": "string"
+          },
+          {
+            "name": "documentComment",
             "in": "formData",
             "type": "string"
           }
@@ -1170,6 +1179,7 @@
           "type": "string"
         },
         "documentName": {
+          "pattern": "^[a-zA-Z0-9]+$",
           "type": "string"
         }
       }
@@ -1210,9 +1220,6 @@
           "format": "uuid",
           "type": "string"
         },
-        "cpr": {
-          "type": "string"
-        },
         "cvrs": {
           "type": "array",
           "items": {
@@ -1247,6 +1254,13 @@
           "type": "string"
         },
         "documentName": {
+          "pattern": "^[a-zA-Z0-9]+$",
+          "type": "string"
+        },
+        "sender": {
+          "type": "string"
+        },
+        "documentComment": {
           "type": "string"
         }
       }
@@ -1312,6 +1326,12 @@
         },
         "footer": {
           "type": "string"
+        },
+        "sender": {
+          "type": "string"
+        },
+        "documentComment": {
+          "type": "string"
         }
       }
     },
@@ -1348,3 +1368,4 @@
     }
   }
 }
+
