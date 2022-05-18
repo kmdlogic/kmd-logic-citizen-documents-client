@@ -84,9 +84,8 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
         }
 
-        public async Task<CompanyDocumentResponse> UpdateCompanyDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CompanyDocumentRequest request)
+        public async Task<CompanyDocumentResponse> UpdateCompanyDataToDbWithHttpMessagesAsync(CompanyDocumentRequest request)
         {
-
             var client = this.CreateClient();
             using var response = await client.UpdateCompanyDataToDbWithHttpMessagesAsync(
                 subscriptionId: new Guid(this._options.SubscriptionId),
@@ -156,7 +155,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
             parameters.Id = documentId;
 
             return await this.UpdateCompanyDataToDbWithHttpMessagesAsync(
-                subscriptionId: new Guid(this._options.SubscriptionId),
                 parameters).ConfigureAwait(false);
         }
 
