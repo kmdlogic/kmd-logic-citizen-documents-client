@@ -103,7 +103,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                     configId,
                     new Guid(configuration.SubscriptionId),
                     cpr: configuration.Cpr,
-                    documentName: configuration.DocumentName,
+                    documentName: configuration.DocumentName.Split('.')[0],
                     documentType: configuration.DocumentType,
                     retentionPeriodInDays: configuration.RetentionPeriodInDays))
                 .ConfigureAwait(false);
@@ -118,7 +118,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 document: stream,
                 retentionPeriodInDays: configuration.RetentionPeriodInDays,
                 companyDocumentType: configuration.CompanyDocumentType,
-                documentName: configuration.DocumentName,
+                documentName: configuration.DocumentName.Split('.')[0],
                 sender: configuration.Sender,
                 documentComment: configuration.DocumentComment).ConfigureAwait(false);
 
@@ -133,7 +133,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 retentionPeriodInDays: configuration.RetentionPeriodInDays,
                 status: "Completed",
                 fileName: "test.png",
-                documentName: "test.png",
+                documentName: "test",
                 sender: configuration.Sender,
                 documentComment: configuration.DocumentComment);
 

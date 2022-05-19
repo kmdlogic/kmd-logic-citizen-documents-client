@@ -29,9 +29,9 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
         public string Title { get; set; } = "test";
 
-        public string Sender { get; set; }
+        public string Sender { get; set; } = "LogicTestUser";
 
-        public string DocumentComment { get; set; }
+        public string DocumentComment { get; set; } = "This is test comment";
 
     }
 }
