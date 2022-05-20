@@ -133,7 +133,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 retentionPeriodInDays: configuration.RetentionPeriodInDays,
                 status: "Completed",
                 fileName: "test.png",
-                documentName: configuration.DocumentName,
+                documentName: configuration.DocumentName.Split('.')[0],
                 sender: configuration.Sender,
                 documentComment: configuration.DocumentComment);
 
