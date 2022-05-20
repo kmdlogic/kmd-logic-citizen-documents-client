@@ -74,7 +74,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
             var options = new DocumentsOptions(configuration.SubscriptionId, configuration.ServiceUri);
 
             using var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, options);
-            using Stream stream = File.OpenRead(configuration.DocumentName);
+            using Stream stream = File.OpenRead(configuration.DocumentName + ".pdf");
             var configId = Guid.NewGuid();
             if (string.IsNullOrEmpty(configuration.ConfigurationId))
             {
@@ -103,7 +103,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                     configId,
                     new Guid(configuration.SubscriptionId),
                     cpr: configuration.Cpr,
-                    documentName: configuration.DocumentName.Split('.')[0],
+                    documentName: configuration.DocumentName,
                     documentType: configuration.DocumentType,
                     retentionPeriodInDays: configuration.RetentionPeriodInDays))
                 .ConfigureAwait(false);
@@ -118,7 +118,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 document: stream,
                 retentionPeriodInDays: configuration.RetentionPeriodInDays,
                 companyDocumentType: configuration.CompanyDocumentType,
-                documentName: configuration.DocumentName.Split('.')[0],
+                documentName: configuration.DocumentName,
                 sender: configuration.Sender,
                 documentComment: configuration.DocumentComment).ConfigureAwait(false);
 
@@ -133,11 +133,11 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 retentionPeriodInDays: configuration.RetentionPeriodInDays,
                 status: "Completed",
                 fileName: "test.png",
-                documentName: configuration.DocumentName.Split('.')[0],
+                documentName: configuration.DocumentName,
                 sender: configuration.Sender,
                 documentComment: configuration.DocumentComment);
 
-            using Stream companyDocumentStream = File.OpenRead(configuration.DocumentName);
+            using Stream companyDocumentStream = File.OpenRead(configuration.DocumentName + ".pdf");
 
             var updateCompanyDocument = await companyDocumentClient.UploadCompanyFileAsync(
                document: companyDocumentStream,
