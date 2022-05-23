@@ -22,9 +22,11 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         /// <summary>
         /// Initializes a new instance of the CompanyDocumentResponse class.
         /// </summary>
+        /// <param name="documentId"></param>
         /// <param name="companyDocumentType">Possible values include:
         /// 'Document', 'DigitalPostCoverLetter',
         /// 'SnailMailCoverLetter'</param>
+        /// <param name="fileAccessPageUrl"></param>
         public CompanyDocumentResponse(System.Guid? documentId = default(System.Guid?), string companyDocumentType = default(string), string fileAccessPageUrl = default(string))
         {
             DocumentId = documentId;

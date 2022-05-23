@@ -1,3 +1,6 @@
+3.1.1
+* Added additional properties in upload company document
+
 3.1.0
 * Exposed upload company document in client
 

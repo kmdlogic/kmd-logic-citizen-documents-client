@@ -6,6 +6,7 @@
 
 namespace Kmd.Logic.CitizenDocuments.Client.Models
 {
+    using Microsoft.Rest;
     using Newtonsoft.Json;
     using System.Linq;
 
@@ -24,11 +25,21 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         /// Initializes a new instance of the CitizenDocumentUpdateRequest
         /// class.
         /// </summary>
+        /// <param name="id"></param>
+        /// <param name="subscriptionId"></param>
+        /// <param name="citizenDocumentConfigId"></param>
+        /// <param name="cpr"></param>
         /// <param name="documentType">Possible values include:
         /// 'CitizenDocument', 'DigitalPostCoverLetter',
         /// 'SnailMailCoverLetter'</param>
+        /// <param name="uploadedAt"></param>
+        /// <param name="uploadedBy"></param>
+        /// <param name="documentUrl"></param>
+        /// <param name="retentionPeriodInDays"></param>
         /// <param name="status">Possible values include: 'InProgress',
         /// 'Completed', 'Failed'</param>
+        /// <param name="fileName"></param>
+        /// <param name="documentName"></param>
         public CitizenDocumentUpdateRequest(System.Guid? id = default(System.Guid?), System.Guid? subscriptionId = default(System.Guid?), System.Guid? citizenDocumentConfigId = default(System.Guid?), string cpr = default(string), string documentType = default(string), System.DateTime? uploadedAt = default(System.DateTime?), string uploadedBy = default(string), string documentUrl = default(string), int? retentionPeriodInDays = default(int?), string status = default(string), string fileName = default(string), string documentName = default(string))
         {
             Id = id;
@@ -115,5 +126,21 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         [JsonProperty(PropertyName = "documentName")]
         public string DocumentName { get; set; }
 
+        /// <summary>
+        /// Validate the object.
+        /// </summary>
+        /// <exception cref="ValidationException">
+        /// Thrown if validation fails
+        /// </exception>
+        public virtual void Validate()
+        {
+            if (DocumentName != null)
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(DocumentName, "^[a-zA-Z0-9]+$"))
+                {
+                    throw new ValidationException(ValidationRules.Pattern, "DocumentName", "^[a-zA-Z0-9]+$");
+                }
+            }
+        }
     }
 }

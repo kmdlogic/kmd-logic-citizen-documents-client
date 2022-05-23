@@ -22,7 +22,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         /// <summary>
         /// Initializes a new instance of the DocumentFileAccessPageData class.
         /// </summary>
-        public DocumentFileAccessPageData(string fileName = default(string), int? retentionPeriodInDays = default(int?), string systemName = default(string), System.DateTime? documentUploadedTime = default(System.DateTime?), string appTitle = default(string), string pageHeader = default(string), string footer = default(string))
+        public DocumentFileAccessPageData(string fileName = default(string), int? retentionPeriodInDays = default(int?), string systemName = default(string), System.DateTime? documentUploadedTime = default(System.DateTime?), string appTitle = default(string), string pageHeader = default(string), string footer = default(string), string sender = default(string), string documentComment = default(string))
         {
             FileName = fileName;
             RetentionPeriodInDays = retentionPeriodInDays;
@@ -31,6 +31,8 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
             AppTitle = appTitle;
             PageHeader = pageHeader;
             Footer = footer;
+            Sender = sender;
+            DocumentComment = documentComment;
             CustomInit();
         }
 
@@ -73,6 +75,16 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         /// </summary>
         [JsonProperty(PropertyName = "footer")]
         public string Footer { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "sender")]
+        public string Sender { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "documentComment")]
+        public string DocumentComment { get; set; }
 
     }
 }

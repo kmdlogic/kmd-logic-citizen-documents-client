@@ -1753,6 +1753,10 @@ namespace Kmd.Logic.CitizenDocuments.Client
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "request");
             }
+            if (request != null)
+            {
+                request.Validate();
+            }
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -1915,8 +1919,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// </param>
         /// <param name='document'>
         /// </param>
-        /// <param name='cpr'>
-        /// </param>
         /// <param name='retentionPeriodInDays'>
         /// </param>
         /// <param name='companyDocumentType'>
@@ -1924,6 +1926,10 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// 'SnailMailCoverLetter'
         /// </param>
         /// <param name='documentName'>
+        /// </param>
+        /// <param name='sender'>
+        /// </param>
+        /// <param name='documentComment'>
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -1946,7 +1952,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<object>> UploadAttachmentForCompaniesWithHttpMessagesAsync(System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, string cpr = default(string), int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<object>> UploadAttachmentForCompaniesWithHttpMessagesAsync(System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), string sender = default(string), string documentComment = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (documentConfigurationId == null)
             {
@@ -1969,12 +1975,13 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("subscriptionId", subscriptionId);
                 tracingParameters.Add("documentConfigurationId", documentConfigurationId);
-                tracingParameters.Add("cpr", cpr);
                 tracingParameters.Add("cvrs", cvrs);
                 tracingParameters.Add("retentionPeriodInDays", retentionPeriodInDays);
                 tracingParameters.Add("companyDocumentType", companyDocumentType);
                 tracingParameters.Add("document", document);
                 tracingParameters.Add("documentName", documentName);
+                tracingParameters.Add("sender", sender);
+                tracingParameters.Add("documentComment", documentComment);
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "UploadAttachmentForCompanies", tracingParameters);
             }
@@ -2009,11 +2016,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
             {
                 StringContent _documentConfigurationId = new StringContent(documentConfigurationId, System.Text.Encoding.UTF8);
                 _multiPartContent.Add(_documentConfigurationId, "documentConfigurationId");
-            }
-            if (cpr != null)
-            {
-                StringContent _cpr = new StringContent(cpr, System.Text.Encoding.UTF8);
-                _multiPartContent.Add(_cpr, "cpr");
             }
             if (cvrs != null)
             {
@@ -2056,6 +2058,16 @@ namespace Kmd.Logic.CitizenDocuments.Client
             {
                 StringContent _documentName = new StringContent(documentName, System.Text.Encoding.UTF8);
                 _multiPartContent.Add(_documentName, "documentName");
+            }
+            if (sender != null)
+            {
+                StringContent _sender = new StringContent(sender, System.Text.Encoding.UTF8);
+                _multiPartContent.Add(_sender, "sender");
+            }
+            if (documentComment != null)
+            {
+                StringContent _documentComment = new StringContent(documentComment, System.Text.Encoding.UTF8);
+                _multiPartContent.Add(_documentComment, "documentComment");
             }
             _httpRequest.Content = _multiPartContent;
             // Set Credentials

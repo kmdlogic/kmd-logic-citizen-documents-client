@@ -25,16 +25,24 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         /// <summary>
         /// Initializes a new instance of the CompanyDocumentRequest class.
         /// </summary>
+        /// <param name="documentConfigurationId"></param>
+        /// <param name="cvrs"></param>
+        /// <param name="id"></param>
         /// <param name="companyDocumentType">Possible values include:
         /// 'Document', 'DigitalPostCoverLetter',
         /// 'SnailMailCoverLetter'</param>
+        /// <param name="documentUrl"></param>
+        /// <param name="retentionPeriodInDays"></param>
         /// <param name="status">Possible values include: 'InProgress',
         /// 'Completed', 'Failed'</param>
-        public CompanyDocumentRequest(System.Guid documentConfigurationId, IList<string> cvrs, System.Guid? id = default(System.Guid?), string cpr = default(string), string companyDocumentType = default(string), string documentUrl = default(string), int? retentionPeriodInDays = default(int?), string status = default(string), string fileName = default(string), string documentName = default(string))
+        /// <param name="fileName"></param>
+        /// <param name="documentName"></param>
+        /// <param name="sender"></param>
+        /// <param name="documentComment"></param>
+        public CompanyDocumentRequest(System.Guid documentConfigurationId, IList<string> cvrs, System.Guid? id = default(System.Guid?), string companyDocumentType = default(string), string documentUrl = default(string), int? retentionPeriodInDays = default(int?), string status = default(string), string fileName = default(string), string documentName = default(string), string sender = default(string), string documentComment = default(string))
         {
             Id = id;
             DocumentConfigurationId = documentConfigurationId;
-            Cpr = cpr;
             Cvrs = cvrs;
             CompanyDocumentType = companyDocumentType;
             DocumentUrl = documentUrl;
@@ -42,6 +50,8 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
             Status = status;
             FileName = fileName;
             DocumentName = documentName;
+            Sender = sender;
+            DocumentComment = documentComment;
             CustomInit();
         }
 
@@ -59,11 +69,6 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         /// </summary>
         [JsonProperty(PropertyName = "documentConfigurationId")]
         public System.Guid DocumentConfigurationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "cpr")]
-        public string Cpr { get; set; }
 
         /// <summary>
         /// </summary>
@@ -105,6 +110,16 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         public string DocumentName { get; set; }
 
         /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "sender")]
+        public string Sender { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "documentComment")]
+        public string DocumentComment { get; set; }
+
+        /// <summary>
         /// Validate the object.
         /// </summary>
         /// <exception cref="ValidationException">
@@ -115,6 +130,13 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
             if (Cvrs == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "Cvrs");
+            }
+            if (DocumentName != null)
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(DocumentName, "^[a-zA-Z0-9]+$"))
+                {
+                    throw new ValidationException(ValidationRules.Pattern, "DocumentName", "^[a-zA-Z0-9]+$");
+                }
             }
         }
     }

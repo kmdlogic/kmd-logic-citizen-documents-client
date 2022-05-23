@@ -374,8 +374,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// </param>
             /// <param name='document'>
             /// </param>
-            /// <param name='cpr'>
-            /// </param>
             /// <param name='retentionPeriodInDays'>
             /// </param>
             /// <param name='companyDocumentType'>
@@ -384,9 +382,13 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// </param>
             /// <param name='documentName'>
             /// </param>
-            public static object UploadAttachmentForCompanies(this IInternalClient operations, System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, string cpr = default(string), int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string))
+            /// <param name='sender'>
+            /// </param>
+            /// <param name='documentComment'>
+            /// </param>
+            public static object UploadAttachmentForCompanies(this IInternalClient operations, System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), string sender = default(string), string documentComment = default(string))
             {
-                return operations.UploadAttachmentForCompaniesAsync(subscriptionId, documentConfigurationId, cvrs, document, cpr, retentionPeriodInDays, companyDocumentType, documentName).GetAwaiter().GetResult();
+                return operations.UploadAttachmentForCompaniesAsync(subscriptionId, documentConfigurationId, cvrs, document, retentionPeriodInDays, companyDocumentType, documentName, sender, documentComment).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -403,8 +405,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// </param>
             /// <param name='document'>
             /// </param>
-            /// <param name='cpr'>
-            /// </param>
             /// <param name='retentionPeriodInDays'>
             /// </param>
             /// <param name='companyDocumentType'>
@@ -413,12 +413,16 @@ namespace Kmd.Logic.CitizenDocuments.Client
             /// </param>
             /// <param name='documentName'>
             /// </param>
+            /// <param name='sender'>
+            /// </param>
+            /// <param name='documentComment'>
+            /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> UploadAttachmentForCompaniesAsync(this IInternalClient operations, System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, string cpr = default(string), int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> UploadAttachmentForCompaniesAsync(this IInternalClient operations, System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), string sender = default(string), string documentComment = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.UploadAttachmentForCompaniesWithHttpMessagesAsync(subscriptionId, documentConfigurationId, cvrs, document, cpr, retentionPeriodInDays, companyDocumentType, documentName, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.UploadAttachmentForCompaniesWithHttpMessagesAsync(subscriptionId, documentConfigurationId, cvrs, document, retentionPeriodInDays, companyDocumentType, documentName, sender, documentComment, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

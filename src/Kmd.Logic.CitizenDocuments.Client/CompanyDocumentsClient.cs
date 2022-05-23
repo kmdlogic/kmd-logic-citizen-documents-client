@@ -51,10 +51,11 @@ namespace Kmd.Logic.CitizenDocuments.Client
             Guid documentConfigurationId,
             List<string> cvrs,
             Stream document,
-            string cpr,
             int retentionPeriodInDays,
             string companyDocumentType,
-            string documentName)
+            string documentName,
+            string sender,
+            string documentComment)
         {
             var client = this.CreateClient();
             using var response = await client.UploadAttachmentForCompaniesWithHttpMessagesAsync(
@@ -62,10 +63,11 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 documentConfigurationId: documentConfigurationId.ToString(),
                 cvrs: cvrs,
                 document: document,
-                cpr: cpr,
                 retentionPeriodInDays: retentionPeriodInDays,
                 companyDocumentType: companyDocumentType,
-                documentName: documentName).ConfigureAwait(false);
+                documentName: documentName,
+                sender: sender,
+                documentComment: documentComment).ConfigureAwait(false);
 
             switch (response.Response.StatusCode)
             {
@@ -82,9 +84,8 @@ namespace Kmd.Logic.CitizenDocuments.Client
             }
         }
 
-        public async Task<CompanyDocumentResponse> UpdateCompanyDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CompanyDocumentRequest request)
+        public async Task<CompanyDocumentResponse> UpdateCompanyDataToDbWithHttpMessagesAsync(CompanyDocumentRequest request)
         {
-
             var client = this.CreateClient();
             using var response = await client.UpdateCompanyDataToDbWithHttpMessagesAsync(
                 subscriptionId: new Guid(this._options.SubscriptionId),
@@ -154,7 +155,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
             parameters.Id = documentId;
 
             return await this.UpdateCompanyDataToDbWithHttpMessagesAsync(
-                subscriptionId: new Guid(this._options.SubscriptionId),
                 parameters).ConfigureAwait(false);
         }
 

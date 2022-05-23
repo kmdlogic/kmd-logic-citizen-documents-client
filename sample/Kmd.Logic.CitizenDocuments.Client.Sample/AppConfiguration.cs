@@ -21,12 +21,17 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
         public string CompanyDocumentType { get; set; } = "Document";
 
-        public string DocumentName { get; set; } = "TestPdfInA4Format.pdf";
+        public string DocumentName { get; set; } = "TestPdfInA4Format";
 
         public string SendingSystem { get; set; } = "test";
 
         public string SendDocumentType { get; set; } = "alm brev";
 
         public string Title { get; set; } = "test";
+
+        public string Sender { get; set; } = "LogicTestUser";
+
+        public string DocumentComment { get; set; } = "This is test comment";
+
     }
 }
