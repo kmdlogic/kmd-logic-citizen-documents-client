@@ -21,7 +21,7 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
         public string CompanyDocumentType { get; set; } = "Document";
 
-        public string DocumentName { get; set; } = "TestPdfInA4Format.pdf";
+        public string DocumentName { get; set; } = "TestPdfInA4Format";
 
         public string SendingSystem { get; set; } = "test";
 
