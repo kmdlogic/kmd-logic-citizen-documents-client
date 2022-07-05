@@ -1,5 +1,5 @@
 3.1.2
-* Allowed special -,_,' char for documentName properties
+* Allowed special -,_,' characters for documentName properties
 
 3.1.1
 * Added additional properties in upload company document
