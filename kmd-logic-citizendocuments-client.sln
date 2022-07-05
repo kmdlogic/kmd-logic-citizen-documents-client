@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{59
 		.github\workflows\.github-ci.yml = .github\workflows\.github-ci.yml
 		build.ps1 = build.ps1
 		build.sh = build.sh
+		CHANGES.md = CHANGES.md
 		Directory.Build.props = Directory.Build.props
 		global.json = global.json
 		kmd-logic-icon.png = kmd-logic-icon.png

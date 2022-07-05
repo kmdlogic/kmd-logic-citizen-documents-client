@@ -25,20 +25,11 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
         /// <summary>
         /// Initializes a new instance of the CompanyDocumentRequest class.
         /// </summary>
-        /// <param name="documentConfigurationId"></param>
-        /// <param name="cvrs"></param>
-        /// <param name="id"></param>
         /// <param name="companyDocumentType">Possible values include:
         /// 'Document', 'DigitalPostCoverLetter',
         /// 'SnailMailCoverLetter'</param>
-        /// <param name="documentUrl"></param>
-        /// <param name="retentionPeriodInDays"></param>
         /// <param name="status">Possible values include: 'InProgress',
         /// 'Completed', 'Failed'</param>
-        /// <param name="fileName"></param>
-        /// <param name="documentName"></param>
-        /// <param name="sender"></param>
-        /// <param name="documentComment"></param>
         public CompanyDocumentRequest(System.Guid documentConfigurationId, IList<string> cvrs, System.Guid? id = default(System.Guid?), string companyDocumentType = default(string), string documentUrl = default(string), int? retentionPeriodInDays = default(int?), string status = default(string), string fileName = default(string), string documentName = default(string), string sender = default(string), string documentComment = default(string))
         {
             Id = id;
@@ -133,9 +124,9 @@ namespace Kmd.Logic.CitizenDocuments.Client.Models
             }
             if (DocumentName != null)
             {
-                if (!System.Text.RegularExpressions.Regex.IsMatch(DocumentName, "^[a-zA-Z0-9]+$"))
+                if (!System.Text.RegularExpressions.Regex.IsMatch(DocumentName, "^[a-zA-Z0-9-_']+$"))
                 {
-                    throw new ValidationException(ValidationRules.Pattern, "DocumentName", "^[a-zA-Z0-9]+$");
+                    throw new ValidationException(ValidationRules.Pattern, "DocumentName", "^[a-zA-Z0-9-_']+$");
                 }
             }
         }

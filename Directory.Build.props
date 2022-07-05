@@ -19,7 +19,7 @@
 		<RepositoryUrl>https://github.com/kmdlogic/kmd-logic-citizen-documents-client</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<GenerateAssemblyVersionAttribute>true</GenerateAssemblyVersionAttribute>
-		<VersionPrefix Condition=" '$(VersionPrefix)' == '' ">3.1.1</VersionPrefix>
+		<VersionPrefix Condition=" '$(VersionPrefix)' == '' ">3.1.2</VersionPrefix>
 		<Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix)-$(VersionSuffix)</Version>
 		<Version Condition=" '$(Version)' == '' ">$(VersionPrefix)</Version>
 	</PropertyGroup>
