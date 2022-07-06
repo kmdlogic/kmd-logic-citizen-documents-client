@@ -139,7 +139,9 @@
             "name": "retentionPeriodInDays",
             "in": "formData",
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "maximum": 999,
+            "minimum": 0
           },
           {
             "name": "documentType",
@@ -159,7 +161,8 @@
           {
             "name": "documentName",
             "in": "formData",
-            "type": "string"
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9-_']+$"
           }
         ],
         "responses": {
@@ -295,7 +298,10 @@
           "200": {
             "description": "The configuration is loaded successfully",
             "schema": {
-              "$ref": "#/definitions/CitizenDocumentConfigResponse"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CitizenDocumentConfigResponse"
+              }
             }
           },
           "400": {
@@ -543,7 +549,7 @@
             "description": "",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CitizenDocumentUploadRequestModel"
+              "$ref": "#/definitions/CitizenDocumentUpdateRequest"
             }
           }
         ],
@@ -571,6 +577,370 @@
             "schema": {
               "type": "string"
             }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/{subscriptionId}/company/upload-document": {
+      "post": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Upload's citizen/company document for companies",
+        "operationId": "UploadAttachmentForCompanies",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "documentConfigurationId",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "cvrs",
+            "in": "formData",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "retentionPeriodInDays",
+            "in": "formData",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "companyDocumentType",
+            "in": "formData",
+            "type": "string",
+            "enum": [
+              "Document",
+              "DigitalPostCoverLetter",
+              "SnailMailCoverLetter"
+            ]
+          },
+          {
+            "name": "document",
+            "in": "formData",
+            "required": true,
+            "type": "file"
+          },
+          {
+            "name": "documentName",
+            "in": "formData",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9-_']+$"
+          },
+          {
+            "name": "sender",
+            "in": "formData",
+            "type": "string"
+          },
+          {
+            "name": "documentComment",
+            "in": "formData",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The document is uploaded successfully",
+            "schema": {
+              "$ref": "#/definitions/CompanyDocumentUploadResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request is unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/{subscriptionId}/company/update-data-to-db": {
+      "post": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Updates the upload data to db",
+        "operationId": "UpdateCompanyDataToDb",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CompanyDocumentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data is updated successfully",
+            "schema": {
+              "$ref": "#/definitions/CompanyDocumentResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request is unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/document-download/company/{documentId}": {
+      "get": {
+        "tags": [
+          "CompanyDocumentFileAccess"
+        ],
+        "summary": "Gets the company document by id.",
+        "operationId": "GeCompanyDocument",
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The document is loaded successfully",
+            "schema": {
+              "$ref": "#/definitions/DocumentDownloadResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "410": {
+            "description": "Client Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/subscriptions/document-download/company/{documentId}/load-document-data": {
+      "get": {
+        "tags": [
+          "CompanyDocumentFileAccess"
+        ],
+        "summary": "Loads the data for Company Document File Access Page.",
+        "operationId": "GetCompanyFileAccessPageData",
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data is loaded successfully",
+            "schema": {
+              "$ref": "#/definitions/DocumentFileAccessPageData"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Document is not found"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/load-documents/{cpr}": {
+      "get": {
+        "tags": [
+          "LoadDocuments"
+        ],
+        "summary": "Loads all uploaded documents based on cpr number",
+        "operationId": "GetFileAccessListByCPr",
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "cpr",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All documents uploaded aganist the cpr number are successfully loaded",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/LoadDocumentResponse"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/load-documents/company/{cvr}": {
+      "get": {
+        "tags": [
+          "LoadDocuments"
+        ],
+        "summary": "Loads all uploaded documents based on cvr number",
+        "operationId": "GetFileAccessListByCvr",
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "cvr",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All documents uploaded against the cvr number are successfully loaded",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/LoadDocumentResponse"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -756,7 +1126,7 @@
         }
       }
     },
-    "CitizenDocumentUploadRequestModel": {
+    "CitizenDocumentUpdateRequest": {
       "type": "object",
       "properties": {
         "id": {
@@ -809,6 +1179,181 @@
           "type": "string"
         },
         "documentName": {
+          "pattern": "^[a-zA-Z0-9-_']+$",
+          "type": "string"
+        }
+      }
+    },
+    "CompanyDocumentUploadResponse": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "companyDocumentType": {
+          "type": "string",
+          "enum": [
+            "Document",
+            "DigitalPostCoverLetter",
+            "SnailMailCoverLetter"
+          ]
+        },
+        "fileAccessPageUrl": {
+          "format": "uri",
+          "type": "string"
+        }
+      }
+    },
+    "CompanyDocumentRequest": {
+      "required": [
+        "cvrs",
+        "documentConfigurationId"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "documentConfigurationId": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "cvrs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "companyDocumentType": {
+          "type": "string",
+          "enum": [
+            "Document",
+            "DigitalPostCoverLetter",
+            "SnailMailCoverLetter"
+          ]
+        },
+        "documentUrl": {
+          "format": "uri",
+          "type": "string"
+        },
+        "retentionPeriodInDays": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "InProgress",
+            "Completed",
+            "Failed"
+          ]
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "documentName": {
+          "pattern": "^[a-zA-Z0-9-_']+$",
+          "type": "string"
+        },
+        "sender": {
+          "type": "string"
+        },
+        "documentComment": {
+          "type": "string"
+        }
+      }
+    },
+    "CompanyDocumentResponse": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "companyDocumentType": {
+          "type": "string",
+          "enum": [
+            "Document",
+            "DigitalPostCoverLetter",
+            "SnailMailCoverLetter"
+          ]
+        },
+        "fileAccessPageUrl": {
+          "format": "uri",
+          "type": "string"
+        }
+      }
+    },
+    "DocumentDownloadResponse": {
+      "type": "object",
+      "properties": {
+        "documentFileId": {
+          "format": "uuid",
+          "description": "The unique identifier of the Document",
+          "type": "string"
+        },
+        "documentFileUri": {
+          "format": "uri",
+          "description": "The location of the Document",
+          "type": "string"
+        }
+      }
+    },
+    "DocumentFileAccessPageData": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string"
+        },
+        "retentionPeriodInDays": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "systemName": {
+          "type": "string"
+        },
+        "documentUploadedTime": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "appTitle": {
+          "type": "string"
+        },
+        "pageHeader": {
+          "type": "string"
+        },
+        "footer": {
+          "type": "string"
+        },
+        "sender": {
+          "type": "string"
+        },
+        "documentComment": {
+          "type": "string"
+        }
+      }
+    },
+    "LoadDocumentResponse": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string"
+        },
+        "retentionPeriodInDays": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "systemName": {
+          "type": "string"
+        },
+        "documentUploadedTime": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "documentId": {
+          "format": "uuid",
           "type": "string"
         }
       }

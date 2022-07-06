@@ -24,8 +24,8 @@ namespace Kmd.Logic.CitizenDocuments.Client
     public sealed class CitizenDocumentsClient : IDisposable
     {
         private readonly HttpClient _httpClient;
-        private readonly CitizenDocumentsOptions _options;
-        private readonly LogicTokenProviderFactory _tokenProviderFactory;
+        private readonly DocumentsOptions _options;
+        private readonly ITokenProviderFactory _tokenProviderFactory;
 
         private InternalClient _internalClient;
 
@@ -37,21 +37,13 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <param name="options">The required configuration options.</param>
         public CitizenDocumentsClient(
             HttpClient httpClient,
-            LogicTokenProviderFactory tokenProviderFactory,
-            CitizenDocumentsOptions options)
+            ITokenProviderFactory tokenProviderFactory,
+            DocumentsOptions options)
         {
             this._httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             this._options = options ?? throw new ArgumentNullException(nameof(options));
             this._tokenProviderFactory =
                 tokenProviderFactory ?? throw new ArgumentNullException(nameof(tokenProviderFactory));
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            if (string.IsNullOrEmpty(this._tokenProviderFactory.DefaultAuthorizationScope))
-            {
-                this._tokenProviderFactory.DefaultAuthorizationScope =
-                    "https://logicidentityprod.onmicrosoft.com/bb159109-0ccd-4b08-8d0d-80370cedda84/.default";
-            }
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
@@ -67,7 +59,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <exception cref="ValidationException">Missing cpr number.</exception>
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
-        /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
+        /// <exception cref="DocumentsException">Invalid Citizen document configuration details.</exception>
         public async Task<CitizenDocumentUploadResponse> UploadAttachmentWithHttpMessagesAsync(
             string configurationId,
             int retentionPeriodInDays,
@@ -93,10 +85,10 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     return (CitizenDocumentUploadResponse)response.Body;
 
                 case System.Net.HttpStatusCode.Unauthorized:
-                    throw new CitizenDocumentsException("Unauthorized", response.Body as string);
+                    throw new DocumentsException("Unauthorized", response.Body as string);
 
                 default:
-                    throw new CitizenDocumentsException(
+                    throw new DocumentsException(
                         "An unexpected error occurred while processing the request",
                         response.Body as string);
             }
@@ -111,7 +103,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <exception cref="ValidationException">Missing cpr number.</exception>
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
-        /// <exception cref="CitizenDocumentsException">Invalid Citizen document configuration details.</exception>
+        /// <exception cref="DocumentsException">Invalid Citizen document configuration details.</exception>
         public async Task<CitizenDocumentUploadResponse> UploadFileAsync(
             Stream document,
             UploadFileParameters parameters)
@@ -156,7 +148,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
                 throw new ApplicationException("Upload Failed");
             }
 
-            var updateDataRequest = new CitizenDocumentUploadRequestModel
+            var updateDataRequest = new CitizenDocumentUpdateRequest
             {
                 Id = documentId,
                 SubscriptionId = parameters.SubscriptionId,
@@ -178,10 +170,10 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     return (CitizenDocumentUploadResponse)updateResponse.Body;
 
                 case System.Net.HttpStatusCode.Unauthorized:
-                    throw new CitizenDocumentsException("Unauthorized", updateResponse.Body as string);
+                    throw new DocumentsException("Unauthorized", updateResponse.Body as string);
 
                 default:
-                    throw new CitizenDocumentsException(
+                    throw new DocumentsException(
                         "Invalid configuration provided to access Citizen Document service",
                         updateResponse.Body as string);
             }
@@ -243,7 +235,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <returns>The messageId or error if the identifier isn't valid.</returns>
         /// <exception cref="SerializationException">Unable to process the service response.</exception>
         /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
-        /// <exception cref="CitizenDocumentsException">Invalid Citizen configuration details.</exception>
+        /// <exception cref="DocumentsException">Invalid Citizen configuration details.</exception>
         public async Task<SendCitizenDocumentResponse> SendDocumentWithHttpMessagesAsync(
             SendCitizenDocumentRequest sendCitizenDocumentRequest)
         {
@@ -259,17 +251,75 @@ namespace Kmd.Logic.CitizenDocuments.Client
                     return response.Body;
 
                 case System.Net.HttpStatusCode.NotFound:
-                    throw new CitizenDocumentsException(
+                    throw new DocumentsException(
                         "Provided citizen document id is invalid",
                         response.Response.Content.ReadAsStringAsync().Result);
 
                 case System.Net.HttpStatusCode.Unauthorized:
-                    throw new CitizenDocumentsException(
+                    throw new DocumentsException(
                         "Unauthorized",
                         response.Response.Content.ReadAsStringAsync().Result);
 
                 default:
-                    throw new CitizenDocumentsException(
+                    throw new DocumentsException(
+                        "An unexpected error occurred while processing the request",
+                        response.Response.Content.ReadAsStringAsync().Result);
+            }
+        }
+
+        /// <summary>
+        /// Creates a citizen document request.
+        /// </summary>
+        /// <param name="citizenDocumentProviderConfigRequest">Request model.</param>
+        /// <returns>The citizen document response model.</returns>
+        /// <exception cref="SerializationException">Unable to process the service response.</exception>
+        /// <exception cref="LogicTokenProviderException">Unable to issue an authorization token.</exception>
+        /// <exception cref="DocumentsException">Invalid Citizen configuration details.</exception>
+        public async Task<CitizenDocumentProviderConfigResponse> CreateProviderConfiguration(
+              CitizenDocumentProviderConfigRequest citizenDocumentProviderConfigRequest)
+        {
+            var client = this.CreateClient();
+
+            using var response = await client.SaveConfigWithHttpMessagesAsync(
+                subscriptionId: new Guid(this._options.SubscriptionId),
+                request: citizenDocumentProviderConfigRequest).ConfigureAwait(false);
+
+            switch (response.Response.StatusCode)
+            {
+                case System.Net.HttpStatusCode.Created:
+                    return (CitizenDocumentProviderConfigResponse)response.Body;
+
+                case System.Net.HttpStatusCode.Unauthorized:
+                    throw new DocumentsException(
+                        "Unauthorized",
+                        response.Response.Content.ReadAsStringAsync().Result);
+
+                default:
+                    throw new DocumentsException(
+                        "An unexpected error occurred while processing the request",
+                        response.Response.Content.ReadAsStringAsync().Result);
+            }
+        }
+
+        public async Task<IList<CitizenDocumentConfigResponse>> LoadProviderConfiguration()
+        {
+            var client = this.CreateClient();
+
+            using var response = await client.LoadProviderConfigurationWithHttpMessagesAsync(
+                subscriptionId: new Guid(this._options.SubscriptionId)).ConfigureAwait(false);
+
+            switch (response.Response.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    return response.Body;
+
+                case System.Net.HttpStatusCode.Unauthorized:
+                    throw new DocumentsException(
+                        "Unauthorized",
+                        response.Response.Content.ReadAsStringAsync().Result);
+
+                default:
+                    throw new DocumentsException(
                         "An unexpected error occurred while processing the request",
                         response.Response.Content.ReadAsStringAsync().Result);
             }

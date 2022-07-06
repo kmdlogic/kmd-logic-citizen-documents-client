@@ -120,7 +120,7 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<CitizenDocumentConfigResponse>> LoadProviderConfigurationWithHttpMessagesAsync(System.Guid subscriptionId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<IList<CitizenDocumentConfigResponse>>> LoadProviderConfigurationWithHttpMessagesAsync(System.Guid subscriptionId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Sends the documents to citizens
@@ -183,7 +183,105 @@ namespace Kmd.Logic.CitizenDocuments.Client
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<object>> UpdateDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CitizenDocumentUploadRequestModel request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<object>> UpdateDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CitizenDocumentUpdateRequest request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Upload's citizen/company document for companies
+        /// </summary>
+        /// <param name='subscriptionId'>
+        /// </param>
+        /// <param name='documentConfigurationId'>
+        /// </param>
+        /// <param name='cvrs'>
+        /// </param>
+        /// <param name='document'>
+        /// </param>
+        /// <param name='retentionPeriodInDays'>
+        /// </param>
+        /// <param name='companyDocumentType'>
+        /// Possible values include: 'Document', 'DigitalPostCoverLetter',
+        /// 'SnailMailCoverLetter'
+        /// </param>
+        /// <param name='documentName'>
+        /// </param>
+        /// <param name='sender'>
+        /// </param>
+        /// <param name='documentComment'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<object>> UploadAttachmentForCompaniesWithHttpMessagesAsync(System.Guid subscriptionId, string documentConfigurationId, IList<string> cvrs, Stream document, int? retentionPeriodInDays = default(int?), string companyDocumentType = default(string), string documentName = default(string), string sender = default(string), string documentComment = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Updates the upload data to db
+        /// </summary>
+        /// <param name='subscriptionId'>
+        /// </param>
+        /// <param name='request'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<object>> UpdateCompanyDataToDbWithHttpMessagesAsync(System.Guid subscriptionId, CompanyDocumentRequest request, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Gets the company document by id.
+        /// </summary>
+        /// <param name='documentId'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<object>> GeCompanyDocumentWithHttpMessagesAsync(System.Guid documentId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Loads the data for Company Document File Access Page.
+        /// </summary>
+        /// <param name='documentId'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<DocumentFileAccessPageData>> GetCompanyFileAccessPageDataWithHttpMessagesAsync(System.Guid documentId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Loads all uploaded documents based on cpr number
+        /// </summary>
+        /// <param name='cpr'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<IList<LoadDocumentResponse>>> GetFileAccessListByCPrWithHttpMessagesAsync(string cpr, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Loads all uploaded documents based on cvr number
+        /// </summary>
+        /// <param name='cvr'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<IList<LoadDocumentResponse>>> GetFileAccessListByCvrWithHttpMessagesAsync(string cvr, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

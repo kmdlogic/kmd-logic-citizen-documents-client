@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Kmd.Logic.CitizenDocuments.Client.Models;
 using Kmd.Logic.Identity.Authorization;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -68,13 +71,36 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
 
             using var httpClient = new HttpClient();
             using var tokenProviderFactory = new LogicTokenProviderFactory(tokenProviderOptions);
-            var options = new CitizenDocumentsOptions(configuration.SubscriptionId, configuration.ServiceUri);
+            var options = new DocumentsOptions(configuration.SubscriptionId, configuration.ServiceUri);
 
             using var citizenDocumentClient = new CitizenDocumentsClient(httpClient, tokenProviderFactory, options);
-            using Stream stream = File.OpenRead(configuration.DocumentName);
+            using Stream stream = File.OpenRead(configuration.DocumentName + ".pdf");
+            var configId = Guid.NewGuid();
+            if (string.IsNullOrEmpty(configuration.ConfigurationId))
+            {
+                var requestToupload = new CitizenDocumentProviderConfigRequest
+                {
+                    AppTitle = "Create config",
+                    ConfigName = "Test Config",
+                    DigitalPostConfigurationId = Guid.NewGuid(),
+                    SystemName = "test",
+                    PageHeader = "test",
+                    Footer = "footer",
+                };
+
+                var citizenDocumentConfiguration = await citizenDocumentClient.CreateProviderConfiguration(requestToupload).ConfigureAwait(false);
+                configId = citizenDocumentConfiguration.ConfigurationId.Value;
+
+                var loadedConfigurations = await citizenDocumentClient.LoadProviderConfiguration().ConfigureAwait(false);
+                Console.WriteLine(loadedConfigurations.FirstOrDefault().ConfigId);
+            }
+            else
+            {
+                configId = new Guid(configuration.ConfigurationId);
+            }
 
             var uploadWithLargeSizeDocument = await citizenDocumentClient.UploadFileAsync(stream, new UploadFileParameters(
-                    new Guid(configuration.ConfigurationId),
+                    configId,
                     new Guid(configuration.SubscriptionId),
                     cpr: configuration.Cpr,
                     documentName: configuration.DocumentName,
@@ -83,6 +109,41 @@ namespace Kmd.Logic.CitizenDocuments.Client.Sample
                 .ConfigureAwait(false);
 
             Log.Information("The {DocumentType} document with id {DocumentId} and file access page url {FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
+
+            var cvrs = new List<string> { "88146328", "56482911" };
+            using var companyDocumentClient = new CompanyDocumentsClient(httpClient, tokenProviderFactory, options);
+            var uploadCompanyDocument = await companyDocumentClient.UploadAttachmentWithHttpMessagesAsync(
+                documentConfigurationId: configId,
+                cvrs: cvrs,
+                document: stream,
+                retentionPeriodInDays: configuration.RetentionPeriodInDays,
+                companyDocumentType: configuration.CompanyDocumentType,
+                documentName: configuration.DocumentName,
+                sender: configuration.Sender,
+                documentComment: configuration.DocumentComment).ConfigureAwait(false);
+
+            Log.Information($"The {configuration.CompanyDocumentType} document with id {uploadCompanyDocument.DocumentId} and file access page url {uploadCompanyDocument.FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
+
+            var updateCompanyDocumentRequest = new CompanyDocumentRequest(
+                documentConfigurationId: configId,
+                cvrs: cvrs,
+                id: Guid.NewGuid(),
+                companyDocumentType: configuration.CompanyDocumentType,
+                documentUrl: "https://citizen-documents.prod.kmdlogic.io",
+                retentionPeriodInDays: configuration.RetentionPeriodInDays,
+                status: "Completed",
+                fileName: "test.png",
+                documentName: configuration.DocumentName,
+                sender: configuration.Sender,
+                documentComment: configuration.DocumentComment);
+
+            using Stream companyDocumentStream = File.OpenRead(configuration.DocumentName + ".pdf");
+
+            var updateCompanyDocument = await companyDocumentClient.UploadCompanyFileAsync(
+               document: companyDocumentStream,
+               parameters: updateCompanyDocumentRequest).ConfigureAwait(false);
+
+            Log.Information($"The {configuration.CompanyDocumentType} document with id {updateCompanyDocument.DocumentId} and file access page url {updateCompanyDocument.FileAccessPageUrl} is uploaded successfully", uploadWithLargeSizeDocument.DocumentType, uploadWithLargeSizeDocument.DocumentId, uploadWithLargeSizeDocument.FileAccessPageUrl);
 
             return "The citizen document was uploaded successfully";
         }
