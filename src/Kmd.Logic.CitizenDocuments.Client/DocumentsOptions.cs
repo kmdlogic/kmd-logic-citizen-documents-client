@@ -26,4 +26,6 @@ namespace Kmd.Logic.CitizenDocuments.Client
             this.ServiceUri = serviceUri ?? new Uri("https://gateway.kmdlogic.io/citizen-documents/v1");
         }
     }
+
 }
+
