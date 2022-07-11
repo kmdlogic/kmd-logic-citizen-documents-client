@@ -27,5 +27,3 @@ namespace Kmd.Logic.CitizenDocuments.Client
         }
     }
 }
-
-
